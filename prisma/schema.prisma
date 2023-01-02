@@ -10,24 +10,184 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum RoleEnumType {
+  admin
+  customer
+}
+
+enum PaymentType {
+  cash
+  card
+}
+
+model AdminUser {
+  id          Int        @id @default(autoincrement())
+  username    String
+  password    String
+  firstName   String
+  lastName    String
+  type_id     Int
+  Admin_type  Admin_type @relation(fields: [type_id], references: [id])
+  last_login  DateTime   @default(now())
+  create_at   DateTime   @default(now())
+  modified_at DateTime   @updatedAt
+}
+
+model RefreshToken {
+  id          String   @id @unique @default(uuid())
+  hashedToken String
+  userId      Int
+  User        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  revoked     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Admin_type {
+  id          Int         @id @default(autoincrement())
+  admin_type  String
+  permission  String
+  create_at   DateTime    @default(now())
+  modified_at DateTime    @updatedAt
+  AdminUser   AdminUser[]
+}
 
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-  posts Post[]
+  id              Int               @id @default(autoincrement())
+  firstName       String
+  lastname        String
+  email           String
+  password        String
+  RefreshToken    RefreshToken[]
+  role            RoleEnumType      @default(customer)
+  phoneNumber     String
+  Address         Address[]
+  UserPayment     UserPayment[]
+  ShoppingSession ShoppingSession[]
+  OrderDetails    OrderDetails[]
+  Messages        Messages[]
 }
 
-model Post {
-  id        Int     @id @default(autoincrement())
-  title     String
-  content   String?
-  published Boolean @default(false)
-  author    User    @relation(fields: [authorId], references: [id])
-  authorId  Int
+model Address {
+  id          Int    @id @default(autoincrement())
+  User        User   @relation(fields: [user_id], references: [id])
+  user_id     Int
+  companyName String
+  street      Int
+  zipecode    Int
+  city        String
+  province    String
+  country     String
 }
 
-model Teacher {
-  id Int  @id @default(autoincrement())
-  name String
+model UserPayment {
+  id          Int      @id @default(autoincrement())
+  User        User     @relation(fields: [user_id], references: [id])
+  user_id     Int
+  paymentType PaymentType @default(card)
+  provider    String
+  account_no  String
+  expiry      DateTime
+}
+
+model Product {
+  id               Int              @id @default(autoincrement())
+  name             String
+  description      String?
+  categogry_id     Int
+  ProductCategory  ProductCategory  @relation(fields: [categogry_id], references: [id])
+  inventory_id     Int
+  ProductInventory ProductInventory @relation(fields: [inventory_id], references: [id])
+  price            Int
+  discount_id      Int
+  Discount         Discount         @relation(fields: [discount_id], references: [id])
+  create_at        DateTime         @default(now())
+  modified_at      DateTime         @updatedAt
+  delete_at        DateTime         @default(now())
+  OrderItem        OrderItem[]
+}
+
+model ProductCategory {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String?
+  create_at   DateTime  @default(now())
+  modified_at DateTime  @updatedAt
+  delete_at   DateTime  @default(now())
+  Product     Product[]
+}
+
+model ProductInventory {
+  id          Int       @id @default(autoincrement())
+  quantity    Int
+  create_at   DateTime  @default(now())
+  modified_at DateTime  @updatedAt
+  delete_at   DateTime  @default(now())
+  Product     Product[]
+}
+
+model Discount {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String
+  create_at   DateTime  @default(now())
+  modified_at DateTime  @updatedAt
+  delete_at   DateTime  @default(now())
+  Product     Product[]
+}
+
+model ShoppingSession {
+  id          Int      @id @default(autoincrement())
+  user_id     Int
+  User        User     @relation(fields: [user_id], references: [id])
+  total       Int
+  create_at   DateTime @default(now())
+  modified_at DateTime @updatedAt
+}
+
+model OrderItem {
+  id               Int             @id @default(autoincrement())
+  order_id         Int
+  OrderDetails     OrderDetails    @relation(fields: [order_id], references: [id])
+  product_id       Int
+  Product          Product         @relation(fields: [product_id], references: [id])
+  quantity         Int
+  create_at        DateTime        @default(now())
+  modified_at      DateTime        @updatedAt
+  PaymentDetails   PaymentDetails? @relation(fields: [paymentDetailsId], references: [id])
+  paymentDetailsId Int?
+}
+
+model OrderDetails {
+  id             Int            @id @default(autoincrement())
+  user_id        Int
+  User           User           @relation(fields: [user_id], references: [id])
+  total          Int
+  payment_id     Int
+  PaymentDetails PaymentDetails @relation(fields: [payment_id], references: [id])
+  create_at      DateTime       @default(now())
+  modified_at    DateTime       @updatedAt
+  OrderItem      OrderItem[]
+}
+
+model PaymentDetails {
+  id           Int            @id @default(autoincrement())
+  order_id     Int
+  amount       Int
+  provider     String
+  status       String?
+  create_at    DateTime       @default(now())
+  modified_at  DateTime       @updatedAt
+  OrderItem    OrderItem[]
+  OrderDetails OrderDetails[]
+}
+
+model Messages {
+  id        Int      @id @default(autoincrement())
+  user_id   Int
+  User      User     @relation(fields: [user_id], references: [id])
+  email     String
+  subject   String?
+  message   String
+  create_at DateTime @default(now())
 }
