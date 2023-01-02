@@ -1,37 +1,11 @@
-/*
-  Warnings:
-
-  - You are about to drop the column `name` on the `User` table. All the data in the column will be lost.
-  - You are about to drop the `Post` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Teacher` table. If the table is not empty, all the data it contains will be lost.
-  - Added the required column `firstName` to the `User` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `lastname` to the `User` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `password` to the `User` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `phoneNumber` to the `User` table without a default value. This is not possible if the table is not empty.
-
-*/
 -- CreateEnum
 CREATE TYPE "RoleEnumType" AS ENUM ('admin', 'customer');
 
--- DropForeignKey
-ALTER TABLE "Post" DROP CONSTRAINT "Post_authorId_fkey";
+-- CreateEnum
+CREATE TYPE "PaymentEnumType" AS ENUM ('cash', 'card');
 
--- DropIndex
-DROP INDEX "User_email_key";
-
--- AlterTable
-ALTER TABLE "User" DROP COLUMN "name",
-ADD COLUMN     "firstName" TEXT NOT NULL,
-ADD COLUMN     "lastname" TEXT NOT NULL,
-ADD COLUMN     "password" TEXT NOT NULL,
-ADD COLUMN     "phoneNumber" TEXT NOT NULL,
-ADD COLUMN     "role" "RoleEnumType" NOT NULL DEFAULT 'customer';
-
--- DropTable
-DROP TABLE "Post";
-
--- DropTable
-DROP TABLE "Teacher";
+-- CreateEnum
+CREATE TYPE "CategoryEnumType" AS ENUM ('post', 'microwave', 'toaster', 'dishwasher', 'cookware', 'Teapot', 'Knife');
 
 -- CreateTable
 CREATE TABLE "AdminUser" (
@@ -63,12 +37,25 @@ CREATE TABLE "RefreshToken" (
 -- CreateTable
 CREATE TABLE "Admin_type" (
     "id" SERIAL NOT NULL,
-    "admin_type" INTEGER NOT NULL,
+    "admin_type" TEXT NOT NULL,
     "permission" TEXT NOT NULL,
     "create_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "modified_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Admin_type_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "User" (
+    "id" SERIAL NOT NULL,
+    "firstName" TEXT NOT NULL,
+    "lastName" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+    "role" "RoleEnumType" NOT NULL DEFAULT 'customer',
+    "phoneNumber" TEXT NOT NULL,
+
+    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -89,9 +76,9 @@ CREATE TABLE "Address" (
 CREATE TABLE "UserPayment" (
     "id" SERIAL NOT NULL,
     "user_id" INTEGER NOT NULL,
-    "paymentType" TEXT NOT NULL,
+    "paymentType" "PaymentEnumType" NOT NULL DEFAULT 'card',
     "provider" TEXT NOT NULL,
-    "account_no" INTEGER NOT NULL,
+    "account_no" TEXT NOT NULL,
     "expiry" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "UserPayment_pkey" PRIMARY KEY ("id")
@@ -116,7 +103,7 @@ CREATE TABLE "Product" (
 -- CreateTable
 CREATE TABLE "ProductCategory" (
     "id" SERIAL NOT NULL,
-    "name" TEXT NOT NULL,
+    "name" "CategoryEnumType" NOT NULL DEFAULT 'cookware',
     "description" TEXT,
     "create_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "modified_at" TIMESTAMP(3) NOT NULL,
@@ -141,6 +128,8 @@ CREATE TABLE "Discount" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
+    "discount_percent" DECIMAL(65,30) NOT NULL,
+    "active" BOOLEAN NOT NULL DEFAULT false,
     "create_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "modified_at" TIMESTAMP(3) NOT NULL,
     "delete_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -211,6 +200,9 @@ CREATE TABLE "Messages" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "RefreshToken_id_key" ON "RefreshToken"("id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "ProductCategory_name_key" ON "ProductCategory"("name");
 
 -- AddForeignKey
 ALTER TABLE "AdminUser" ADD CONSTRAINT "AdminUser_type_id_fkey" FOREIGN KEY ("type_id") REFERENCES "Admin_type"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -15,9 +15,19 @@ enum RoleEnumType {
   customer
 }
 
-enum PaymentType {
+enum PaymentEnumType {
   cash
   card
+}
+
+enum CategoryEnumType {
+  post
+  microwave
+  toaster
+  dishwasher
+  cookware
+  Teapot
+  Knife
 }
 
 model AdminUser {
@@ -55,7 +65,7 @@ model Admin_type {
 model User {
   id              Int               @id @default(autoincrement())
   firstName       String
-  lastname        String
+  lastName        String
   email           String
   password        String
   RefreshToken    RefreshToken[]
@@ -81,10 +91,10 @@ model Address {
 }
 
 model UserPayment {
-  id          Int      @id @default(autoincrement())
-  User        User     @relation(fields: [user_id], references: [id])
+  id          Int             @id @default(autoincrement())
+  User        User            @relation(fields: [user_id], references: [id])
   user_id     Int
-  paymentType PaymentType @default(card)
+  paymentType PaymentEnumType @default(card)
   provider    String
   account_no  String
   expiry      DateTime
@@ -108,12 +118,12 @@ model Product {
 }
 
 model ProductCategory {
-  id          Int       @id @default(autoincrement())
-  name        String
+  id          Int              @id @default(autoincrement())
+  name        CategoryEnumType @unique @default(cookware)
   description String?
-  create_at   DateTime  @default(now())
-  modified_at DateTime  @updatedAt
-  delete_at   DateTime  @default(now())
+  create_at   DateTime         @default(now())
+  modified_at DateTime         @updatedAt
+  delete_at   DateTime         @default(now())
   Product     Product[]
 }
 
@@ -130,6 +140,8 @@ model Discount {
   id          Int       @id @default(autoincrement())
   name        String
   description String
+  discount_percent Decimal
+  active Boolean @default(false)
   create_at   DateTime  @default(now())
   modified_at DateTime  @updatedAt
   delete_at   DateTime  @default(now())
