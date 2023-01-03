@@ -9,7 +9,7 @@ async function main() {
   const superAdmin = await prisma.user.create({
     data: {
       username: "super admin",
-      email: 'superadmin@test.com',
+      email: `superadmin@test.com`,
       password: await hash('password', 12),
       phone: "0967827020",
       Role: 'superAdmin'
@@ -24,7 +24,7 @@ async function main() {
     const userAdmin = await prisma.user.create({
       data: {
         username: `admin ${i}`,
-        email: `admin${i}@test.com`,
+        email: `useradmin${i}@test.com`,
         password: await hash('password', 12),
         phone: "0967827020",
         Role: 'admin'
@@ -127,7 +127,7 @@ async function main() {
     const productInventory = await prisma.productInventory.create({
       data: {
         quantity: i * 2,
-        createByAdminId: 3,
+        createByAdminId: 2,
       },
     });
     console.table({ productInventory });
@@ -141,7 +141,7 @@ async function main() {
         name: `event ${i}`,
         description: " ",
         discount_percent: x,
-        createByAdminId: 4
+        createByAdminId: 1
       }
     });
     x = x + 0.05
@@ -162,7 +162,7 @@ async function main() {
       },
     });
     console.table({ product });
-  };
-  
+  }
 }
+
 main();
