@@ -1,54 +1,133 @@
 // Seed data to be used in development
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client'
 import { hash } from 'bcrypt';
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
 async function main() {
 
-
+  // create superAdmin
+  const superAdmin = await prisma.user.create({
+    data: {
+      username: "super admin",
+      email: 'superadmin@test.com',
+      password: await hash('password', 12),
+      phone: "0967827020",
+      Role: 'superAdmin'
+    }
+  });
+  console.table({ superAdmin });
  
-  // Create 7 cate
+
+
+  // create 2 admin:
+  for (let i = 1; i < 3; i++) {
+    const userAdmin = await prisma.user.create({
+      data: {
+        username: `admin ${i}`,
+        email: `admin${i}@test.com`,
+        password: await hash('password', 12),
+        phone: "0967827020",
+        Role: 'admin'
+      }
+    });
+    const admin = await prisma.admin.create({
+      data: {
+        username: userAdmin.username,
+        password: userAdmin.password,
+        userId: userAdmin.id,
+      }
+    });
+    console.table({ admin });
+  };
+
+
+    // Create 7 cate
   const productCategory = await prisma.productCategory.createMany({
     data: [
       {
-        name:'Knife',
-        description: "Hello kon Papa"
+        name: 'Knife',
+        description: "Hello kon Papa",
+        createByAdminId: 1
       },
       {
-        name:'Teapot',
-        description: "Hello kon Papa"
+        name: 'Teapot',
+        description: "Hello kon Papa",
+        createByAdminId: 1
       },
       {
-        name:'cookware',
-        description: "Hello kon Papa"
+        name: 'cookware',
+        description: "Hello kon Papa",
+        createByAdminId: 1
       },
       {
-        name:'dishwasher',
-        description: "Hello kon Papa"
+        name: 'dishwasher',
+        description: "Hello kon Papa",
+        createByAdminId: 1
       },
       {
-        name:'post',
-        description: "Hello kon Papa"
+        name: 'post',
+        description: "Hello kon Papa",
+        createByAdminId: 1
       },
       {
-        name:'microwave',
-        description: "Hello kon Papa"
+        name: 'microwave',
+        description: "Hello kon Papa",
+        createByAdminId: 1
       },
       {
-        name:'toaster',
-        description: "Hello kon Papa"
+        name: 'toaster',
+        description: "Hello kon Papa",
+        createByAdminId: 1
       },
-      
     ]
   });
-
   console.table({ productCategory });
 
-  //   Create 25 ProductInventorys
-  for (let i = 1; i < 25; i++) {
+  // create 20 customers(user + customer + address):
+  for (let i = 1; i < 20; i++) {
+    // creatre user
+    const user = await prisma.user.create({
+      data: {
+        username: `username ${i}`,
+        email: `user${i}@test.com`,
+        password: await hash('password', 12),
+        phone: `0923242${i}`,
+        Role: 'customer'
+      }
+    });
+
+
+    // create customer
+    const customer = await prisma.customer.create({
+      data: {
+        username: user.username,
+        password: user.password,
+        userId: user.id
+      }
+    });
+
+    // create address
+    await prisma.address.create({
+      data: {
+        customerId: customer.id,
+        companyName: `company ${i}`,
+        street: 270 + i,
+        zipecode: 300 + i,
+        city: `city${i}`,
+        province: `province${i}`,
+        country:"Cambodia"
+      }
+    })
+    console.table({ customer });
+  };
+
+
+  //  Create 15 ProductInventorys
+  for (let i = 1; i < 15; i++) {
     const productInventory = await prisma.productInventory.create({
       data: {
-        quantity: 15,
+        quantity: i * 2,
+        createByAdminId: 3,
       },
     });
     console.table({ productInventory });
@@ -61,7 +140,8 @@ async function main() {
       data: {
         name: `event ${i}`,
         description: " ",
-        discount_percent: x
+        discount_percent: x,
+        createByAdminId: 4
       }
     });
     x = x + 0.05
@@ -78,102 +158,11 @@ async function main() {
         inventory_id: 2,
         price: 35,
         discount_id: 3,
+        createByAdminId: 2
       },
     });
     console.table({ product });
   };
   
-  // Create 30 users
-  for (let i = 1; i < 30; i++) {
-    //   Create student User
-    const user = await prisma.user.create({
-      data: {
-        firstName: `user${i}`,
-        lastName: `test${i}`,
-        email: `user${i}@test.com`,
-        password: await hash('password', 12),
-        role: 'customer',
-        phoneNumber: "0967827922"
-      },
-    });
-    console.table({ user });
-   
-  //  create message
-  const message = await prisma.messages.create({
-    data: {
-      user_id: user.id,
-      email: user.email,
-      subject: `subject ${i}`,
-      message: `message ${i}`,
-    },
-  });
-  console.table({ message });
-
-  // create address
-  const address = await prisma.address.create({
-    data: {
-      user_id: user.id,
-      companyName: `Company ${i}`,
-      street: 100+i,
-      zipecode: 200+i,
-      city: `City ${i}`,
-      province: `province ${i}`,
-      country: 'Cambodia'
-    },
-  });
-  console.table({ address });
-
-  // create userPayment
-  const userPayment = await prisma.userPayment.create({
-    data: {
-      user_id: user.id,
-      paymentType: 'card',
-      provider: 'ABA',
-      account_no: `0099999000 ${i}`,
-      expiry: '3020-01-01T00:00:00.000Z'
-    }
-  });
-  console.table({ userPayment });
-
-  // create shoppingSession
-  const shoppingSession = await prisma.shoppingSession.create({
-    data: {
-      user_id: user.id,
-      total: 100 + i,
-    }
-  });
-  console.table({ shoppingSession });
-
-  // create paymentDetails
-  const paymentDetails = await prisma.paymentDetails.create({
-    data: {
-      order_id: user.id,
-      amount: 175,
-      provider: "ABA",
-    }
-  });
-  console.table({ paymentDetails });
-
-  // create orderDetails
-  const orderDetails = await prisma.orderDetails.create({
-    data: {
-      user_id: user.id,
-      total: 100 + i,
-      payment_id: paymentDetails.id
-    }
-  });
-  console.table({ orderDetails });
-
-  // create orderItem
-  const orderItem= await prisma.orderItem.create({
-    data: {
-      order_id: user.id,
-      product_id: paymentDetails.id,
-      quantity: 3
-    }
-  });
-  console.table({ orderItem });
-};
 }
-
 main();
