@@ -8,7 +8,8 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { TokenPayload } from '../interfaces';
 import { createSuperAdmin, findSuperAdminByUsername } from '../services/superadmin';
-import { createUserByEmailAndPassword,  findUserByEmail, findUserById } from '../services/user';
+import { createUserByEmailAndPassword, findUserByEmail, findUserById } from '../services/user';
+import { hash } from 'bcrypt';
 
 /**
  * POST /register
@@ -88,7 +89,6 @@ router.post('/login', async (req: Request, res: Response, next: NextFunction) =>
     }
 
     const existingUser = await findUserByEmail(email);
-
     if (!existingUser) {
       res.status(403);
       throw new Error('Invalid login credentials.');
