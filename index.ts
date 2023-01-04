@@ -52,7 +52,7 @@ app.use((err: Error | HttpException, req: Request, res: Response, next: NextFunc
  * Server activation
  */
 
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.info(`server up on port ${PORT}`);
 });
