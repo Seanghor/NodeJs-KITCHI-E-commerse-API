@@ -6,15 +6,24 @@ const prisma = new PrismaClient()
 async function main() {
 
   // create superAdmin
-  const superAdmin = await prisma.user.create({
+  const superAdmin = await prisma.superAdmin.create({
     data: {
       username: "super admin",
       email: `superadmin@test.com`,
-      password: await hash('password', 12),
       phone: "0967827020",
-      Role: 'superAdmin'
+      description: "first superAdmin"
     }
   });
+
+  await prisma.user.create({
+    data: {
+      username: superAdmin.username,
+      email: superAdmin.email,
+      password: await hash('password', 12),
+      phone: superAdmin.phone,
+      Role:'superAdmin'
+    }
+  })
   console.table({ superAdmin });
  
 
@@ -26,7 +35,7 @@ async function main() {
         username: `admin ${i}`,
         email: `useradmin${i}@test.com`,
         password: await hash('password', 12),
-        phone: "0967827020",
+        phone: `09678232${i}`,
         Role: 'admin'
       }
     });

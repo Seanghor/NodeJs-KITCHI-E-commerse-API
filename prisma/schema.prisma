@@ -37,7 +37,7 @@ model User {
   username     String
   email        String         @unique
   password     String
-  phone        String
+  phone        String         @unique
   Role         RoleEnumType   @default(customer)
   RefreshToken RefreshToken[]
   Admin        Admin[]
@@ -52,6 +52,17 @@ model Customer {
   User      User        @relation(fields: [userId], references: [id])
   Address   Address[]
   Cart_item Cart_item[]
+}
+
+model SuperAdmin {
+  id          Int       @id @default(autoincrement())
+  username    String    @unique
+  email       String    @unique
+  phone       String    @unique
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
 }
 
 model Admin {
