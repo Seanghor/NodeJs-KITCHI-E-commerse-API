@@ -1,0 +1,7 @@
+# flyctl launch added from .gitignore
+node_modules
+dist
+yarn.lock
+.gitignore
+**\prisma\migrations
+fly.toml
