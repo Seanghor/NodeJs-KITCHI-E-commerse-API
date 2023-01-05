@@ -32,8 +32,8 @@ import { hash } from 'bcrypt';
 router.post('/register', async (req: Request, res: Response, next: NextFunction) => {
   try {
     // Create School
-    const { username, email, password, phone, description} = req.body;
-    if (!username|| !password || !email || !phone) {
+    const { username, email, password, phone, description } = req.body;
+    if (!username || !password || !email || !phone) {
       res.status(400);
       throw new Error('You must provide an email, password, and name.');
     }
@@ -46,7 +46,7 @@ router.post('/register', async (req: Request, res: Response, next: NextFunction)
     }
 
     // Validate Input
-    const superAdminData= {
+    const superAdminData = {
       username,
       email,
       phone,

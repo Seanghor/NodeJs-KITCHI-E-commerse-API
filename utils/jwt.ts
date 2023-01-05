@@ -4,11 +4,11 @@ import { User } from '@prisma/client';
 import { TokenPayload } from '../interfaces';
 
 function generateAccessToken(user: User) {
-    const payload = {
-        username: user.username,
-        email: user.email,
-        phone: user.phone,
-        Role : user.Role
+  const payload = {
+    username: user.username,
+    email: user.email,
+    phone: user.phone,
+    Role: user.Role,
   } as TokenPayload;
   return jwt.sign(payload, process.env.JWT_ACCESS_SECRET, {
     expiresIn: '7d',
@@ -20,7 +20,7 @@ function generateRefreshToken(user: User, jti: string) {
     username: user.username,
     email: user.email,
     phone: user.phone,
-    Role : user.Role,
+    Role: user.Role,
     jti,
   } as TokenPayload;
   return jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
