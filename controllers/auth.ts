@@ -10,7 +10,6 @@ import { TokenPayload } from '../interfaces';
 import { createSuperAdmin, findSuperAdminByUsername } from '../services/superadmin';
 import { createUserByEmailAndPassword, findUserByEmail, findUserById } from '../services/user';
 
-
 /**
  * POST /register
  * @summary  register a school
