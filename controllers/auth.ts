@@ -1,14 +1,14 @@
-import express, { NextFunction, Request, Response, Router } from 'express';
-import { v4 as uuidv4 } from 'uuid';
-import { addRefreshTokenToWhitelist, deleteRefreshToken, findRefreshTokenById, revokeTokens } from '../services/auth';
+import express, { NextFunction, Request, Response, Router } from "express";
+import { v4 as uuidv4 } from "uuid";
+import { addRefreshTokenToWhitelist, deleteRefreshToken, findRefreshTokenById, revokeTokens } from "../services/auth";
 const router: Router = express.Router();
-import { generateTokens, hashToken } from '../utils/jwt';
-import { SuperAdmin, User } from '@prisma/client';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import { TokenPayload } from '../interfaces';
-import { createSuperAdmin, findSuperAdminByUsername } from '../services/superadmin';
-import { createUserByEmailAndPassword, findUserByEmail, findUserById } from '../services/user';
+import { generateTokens, hashToken } from "../utils/jwt";
+import { SuperAdmin, User } from "@prisma/client";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import { TokenPayload } from "../interfaces";
+import { createSuperAdmin, findSuperAdminByUsername } from "../services/superadmin";
+import { createUserByEmailAndPassword, findUserByEmail, findUserById } from "../services/user";
 
 /**
  * POST /register
@@ -28,20 +28,20 @@ import { createUserByEmailAndPassword, findUserByEmail, findUserById } from '../
  *   "accessToken":"accessToken",
  *  "refreshToken":"refreshToken"
  */
-router.post('/register', async (req: Request, res: Response, next: NextFunction) => {
+router.post("/register", async (req: Request, res: Response, next: NextFunction) => {
   try {
     // Create School
     const { username, email, password, phone, description } = req.body;
     if (!username || !password || !email || !phone) {
       res.status(400);
-      throw new Error('You must provide an email, password, and name.');
+      throw new Error("You must provide an email, password, and name.");
     }
     // Check Exist School name or user
     const existingSuperAdmin = await findSuperAdminByUsername(username);
     const existingUser = await findUserByEmail(email);
     if (existingSuperAdmin || existingUser) {
       res.status(400);
-      throw new Error('SuperAdmin name or user already in used.');
+      throw new Error("SuperAdmin name or user already in used.");
     }
 
     // Validate Input
@@ -62,7 +62,7 @@ router.post('/register', async (req: Request, res: Response, next: NextFunction)
       email,
       password,
       phone,
-      Role: 'superAdmin',
+      Role: "superAdmin",
     } as User;
 
     const user = await createUserByEmailAndPassword(userData);
@@ -79,24 +79,24 @@ router.post('/register', async (req: Request, res: Response, next: NextFunction)
   }
 });
 
-router.post('/login', async (req: Request, res: Response, next: NextFunction) => {
+router.post("/login", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
       res.status(400);
-      throw new Error('You must provide an email and a password.');
+      throw new Error("You must provide an email and a password.");
     }
 
     const existingUser = await findUserByEmail(email);
     if (!existingUser) {
       res.status(403);
-      throw new Error('Invalid login credentials.');
+      throw new Error("Invalid login credentials.");
     }
 
     const validPassword = await bcrypt.compare(password, existingUser.password);
     if (!validPassword) {
       res.status(403);
-      throw new Error('Invalid login credentials.');
+      throw new Error("Invalid login credentials.");
     }
 
     const jti = uuidv4();
@@ -112,31 +112,31 @@ router.post('/login', async (req: Request, res: Response, next: NextFunction) =>
   }
 });
 
-router.post('/refreshToken', async (req: Request, res: Response, next: NextFunction) => {
+router.post("/refreshToken", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { refreshToken } = req.body;
     if (!refreshToken) {
       res.status(400);
-      throw new Error('Missing refresh token.');
+      throw new Error("Missing refresh token.");
     }
     const payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET) as TokenPayload;
     const savedRefreshToken = await findRefreshTokenById(payload.jti);
 
     if (!savedRefreshToken || savedRefreshToken.revoked === true) {
       res.status(401);
-      throw new Error('Unauthorized');
+      throw new Error("Unauthorized");
     }
 
     const hashedToken = hashToken(refreshToken);
     if (hashedToken !== savedRefreshToken.hashedToken) {
       res.status(401);
-      throw new Error('Unauthorized');
+      throw new Error("Unauthorized");
     }
 
     const user = await findUserById(payload.userId);
     if (!user) {
       res.status(401);
-      throw new Error('Unauthorized');
+      throw new Error("Unauthorized");
     }
 
     await deleteRefreshToken(savedRefreshToken.id);
@@ -155,7 +155,7 @@ router.post('/refreshToken', async (req: Request, res: Response, next: NextFunct
 
 // This endpoint is only for demo purpose.
 // Move this logic where you need to revoke the tokens( for ex, on password reset)
-router.post('/revokeRefreshTokens', async (req: Request, res: Response, next: NextFunction) => {
+router.post("/revokeRefreshTokens", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { userId } = req.body;
     await revokeTokens(userId);

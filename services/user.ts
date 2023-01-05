@@ -1,6 +1,6 @@
-import { User } from '@prisma/client';
-import { prisma } from '../prisma/db';
-import bcrypt from 'bcrypt';
+import { User } from "@prisma/client";
+import { prisma } from "../prisma/db";
+import bcrypt from "bcrypt";
 
 const findUserByEmail = async (email: string) => {
   return await prisma.user.findUnique({
