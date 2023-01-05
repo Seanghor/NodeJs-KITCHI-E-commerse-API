@@ -9,7 +9,7 @@ import jwt from 'jsonwebtoken';
 import { TokenPayload } from '../interfaces';
 import { createSuperAdmin, findSuperAdminByUsername } from '../services/superadmin';
 import { createUserByEmailAndPassword, findUserByEmail, findUserById } from '../services/user';
-import { hash } from 'bcrypt';
+
 
 /**
  * POST /register
