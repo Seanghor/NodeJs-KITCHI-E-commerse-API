@@ -33,7 +33,7 @@ async function main() {
     const userAdmin = await prisma.user.create({
       data: {
         username: `admin ${i}`,
-        email: `useradmin${i}@test.com`,
+        email: `admin${i}@test.com`,
         password: await hash('password', 12),
         phone: `09678232${i}`,
         Role: 'admin'
@@ -42,7 +42,8 @@ async function main() {
     const admin = await prisma.admin.create({
       data: {
         username: userAdmin.username,
-        password: userAdmin.password,
+        email: userAdmin.email,
+        phone:userAdmin.phone,
         userId: userAdmin.id,
       }
     });
@@ -56,37 +57,46 @@ async function main() {
       {
         name: 'Knife',
         description: "Hello kon Papa",
-        createByAdminId: 1
+        createByAdminId: 1,
+        modified_at: null,
       },
       {
         name: 'Teapot',
         description: "Hello kon Papa",
-        createByAdminId: 1
+        createByAdminId: 1,
+        modified_at: null,
       },
       {
         name: 'cookware',
         description: "Hello kon Papa",
-        createByAdminId: 1
+        createByAdminId: 1,
+        modified_at: null,
       },
       {
         name: 'dishwasher',
         description: "Hello kon Papa",
-        createByAdminId: 1
+        createByAdminId: 1,
+        modified_at: null,
       },
       {
         name: 'post',
         description: "Hello kon Papa",
-        createByAdminId: 1
+        createByAdminId: 1,
+        modified_at: null,
+ 
       },
       {
         name: 'microwave',
         description: "Hello kon Papa",
-        createByAdminId: 1
+        createByAdminId: 1,
+        modified_at: null,
+
       },
       {
         name: 'toaster',
         description: "Hello kon Papa",
-        createByAdminId: 1
+        createByAdminId: 1,
+        modified_at: null,
       },
     ]
   });
@@ -110,7 +120,8 @@ async function main() {
     const customer = await prisma.customer.create({
       data: {
         username: user.username,
-        password: user.password,
+        email: user.email,
+        phone:user.phone,
         userId: user.id
       }
     });
@@ -137,6 +148,8 @@ async function main() {
       data: {
         quantity: i * 2,
         createByAdminId: 2,
+        modified_at: null,
+
       },
     });
     console.table({ productInventory });
@@ -150,7 +163,9 @@ async function main() {
         name: `event ${i}`,
         description: " ",
         discount_percent: x,
-        createByAdminId: 1
+        createByAdminId: 1,
+        modified_at: null,
+     
       }
     });
     x = x + 0.05
@@ -158,16 +173,18 @@ async function main() {
   };
 
   //   Create 50 products
-  for (let i = 1; i < 50; i++) {
+  for (let i = 1; i < 25; i++) {
     const product = await prisma.product.create({
       data: {
         name: `product ${i}`,
         description: "kit transforming your better life",
-        categogry_id: 1,
+        category_id: 1,
         inventory_id: 2,
         price: 35,
         discount_id: 3,
-        createByAdminId: 2
+        createByAdminId: 2,
+        modified_at: null,
+  
       },
     });
     console.table({ product });

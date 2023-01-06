@@ -8,6 +8,7 @@ function generateAccessToken(user: User) {
     username: user.username,
     email: user.email,
     phone: user.phone,
+    userId : user.id,
     Role: user.Role,
   } as TokenPayload;
   return jwt.sign(payload, process.env.JWT_ACCESS_SECRET, {
@@ -21,6 +22,7 @@ function generateRefreshToken(user: User, jti: string) {
     email: user.email,
     phone: user.phone,
     Role: user.Role,
+    userId : user.id,
     jti,
   } as TokenPayload;
   return jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
