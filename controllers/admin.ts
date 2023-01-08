@@ -2,7 +2,7 @@ import { Admin, User } from '@prisma/client';
 import express, { NextFunction, Request, Response, Router } from 'express';
 const router: Router = express.Router();
 import { isAuth } from '../middlewares/auth';
-import { createAdmin, findAdminById, updateAdminById } from '../services/admin';
+import { createAdmin, findAdminById, findAllAdmins, updateAdminById } from '../services/admin';
 import { createUserByEmailAndPassword, deleteUserById, findUserByEmail, findUserByPhone, updateUserById } from '../services/user';
 
 /**
@@ -183,5 +183,22 @@ router.put('/admin/:id', isAuth, async (req: Request, res: Response, next: NextF
     next(error);
   }
 });
+
+// get all admin:
+router.get('/admins', isAuth, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const payload = req.payload;
+    if (!['superAdmin'].includes(payload.Role)) {
+      res.status(401);
+      throw new Error('🚫User is Un-Authorized 🚫');
+    }
+
+    const admins = await findAllAdmins()
+    res.status(200).json(admins)
+
+  } catch (error) {
+    next(error)
+  }
+})
 
 export default router;

@@ -110,23 +110,23 @@ model Address {
 }
 
 model Product {
-  id               Int              @id @default(autoincrement())
-  name             String           @unique
-  description      String?
-  category_id      Int
-  ProductCategory  ProductCategory  @relation(fields: [category_id], references: [id])
-  inventory_id     Int
-  ProductInventory ProductInventory @relation(fields: [inventory_id], references: [id])
-  price            Int
-  discount_id      Int?
-  Discount         Discount?        @relation(fields: [discount_id], references: [id])
-
-  createByAdminId   Int
-  modifiedByAdminId Int?
-
+  id              Int             @id @default(autoincrement())
+  name            String          @unique
+  description     String?
+  category_id     Int
+  ProductCategory ProductCategory @relation(fields: [category_id], references: [id])
+  Inventory         ProductInventory? @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
+  Discount        Discount?       @relation(fields: [discount_id], references: [id])
   AdminCreate   Admin  @relation(name: "CreateProduct", fields: [createByAdminId], references: [id])
   AdminModified Admin? @relation(name: "ModifiedProduct", fields: [modifiedByAdminId], references: [id])
 
+  discount_id     Int
+  discount_active Boolean         @default(false)
+  price           Decimal
+  discount_price  Decimal
+  inventoryId       Int             @unique
+  createByAdminId   Int
+  modifiedByAdminId Int?
   create_at   DateTime?   @default(now())
   modified_at DateTime?   @updatedAt
   Cart_item   Cart_item[]
@@ -142,45 +142,43 @@ model ProductCategory {
 
   AdminCreate   Admin  @relation(name: "CreateCategory", fields: [createByAdminId], references: [id])
   AdminModified Admin? @relation(name: "ModifiedCategory", fields: [modifiedByAdminId], references: [id])
-  
-  create_at   DateTime  @default(now())
-  modified_at DateTime? @updatedAt
 
-  Product     Product[]
-}
-
-model ProductInventory {
-  id       Int @id @default(autoincrement())
-  quantity Int
-  createByAdminId   Int
-  modifiedByAdminId Int?
-
-  AdminCreate   Admin  @relation(name: "CreateInventory", fields: [createByAdminId], references: [id])
-  AdminModified Admin? @relation(name: "ModifiedInventory", fields: [modifiedByAdminId], references: [id])
-  
   create_at   DateTime  @default(now())
   modified_at DateTime? @updatedAt
 
   Product Product[]
 }
 
+model ProductInventory {
+  id                Int  @id @default(autoincrement())
+  quantity          Int?
+  createByAdminId   Int
+  modifiedByAdminId Int?
+
+  AdminCreate   Admin  @relation(name: "CreateInventory", fields: [createByAdminId], references: [id])
+  AdminModified Admin? @relation(name: "ModifiedInventory", fields: [modifiedByAdminId], references: [id])
+
+  create_at   DateTime  @default(now())
+  modified_at DateTime? @updatedAt
+  Product     Product?
+}
+
 model Discount {
-  id               Int     @id @default(autoincrement())
+  id               Int    @id @default(autoincrement())
   name             String
   description      String
-  discount_percent Decimal
-  active           Boolean @default(false)
+  discount_percent Int    @unique
 
   createByAdminId   Int
   modifiedByAdminId Int?
 
   AdminCreate   Admin  @relation(name: "CreateDiscount", fields: [createByAdminId], references: [id])
   AdminModified Admin? @relation(name: "ModifiedDiscount", fields: [modifiedByAdminId], references: [id])
-  
+
   create_at   DateTime  @default(now())
   modified_at DateTime? @updatedAt
 
-  Product     Product[]
+  Product Product[]
 }
 
 model Cart_item {

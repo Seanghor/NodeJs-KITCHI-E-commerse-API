@@ -4,5 +4,3 @@ import { isAuth } from '../middlewares/auth';
 
 
 export default router;
-
-

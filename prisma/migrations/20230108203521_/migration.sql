@@ -87,15 +87,15 @@ CREATE TABLE "Product" (
     "name" TEXT NOT NULL,
     "description" TEXT,
     "category_id" INTEGER NOT NULL,
-    "inventory_id" INTEGER NOT NULL,
-    "price" INTEGER NOT NULL,
-    "discount_id" INTEGER,
+    "discount_id" INTEGER NOT NULL,
+    "discount_active" BOOLEAN NOT NULL DEFAULT false,
+    "price" DECIMAL(65,30) NOT NULL,
+    "discount_price" DECIMAL(65,30) NOT NULL,
+    "inventoryId" INTEGER NOT NULL,
     "createByAdminId" INTEGER NOT NULL,
     "modifiedByAdminId" INTEGER,
-    "deleteByAdminId" INTEGER,
     "create_at" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
     "modified_at" TIMESTAMP(3),
-    "delete_at" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Product_pkey" PRIMARY KEY ("id")
 );
@@ -107,10 +107,8 @@ CREATE TABLE "ProductCategory" (
     "description" TEXT,
     "createByAdminId" INTEGER NOT NULL,
     "modifiedByAdminId" INTEGER,
-    "deleteByAdminId" INTEGER,
     "create_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "modified_at" TIMESTAMP(3),
-    "delete_at" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "ProductCategory_pkey" PRIMARY KEY ("id")
 );
@@ -118,13 +116,11 @@ CREATE TABLE "ProductCategory" (
 -- CreateTable
 CREATE TABLE "ProductInventory" (
     "id" SERIAL NOT NULL,
-    "quantity" INTEGER NOT NULL,
+    "quantity" INTEGER,
     "createByAdminId" INTEGER NOT NULL,
     "modifiedByAdminId" INTEGER,
-    "deleteByAdminId" INTEGER,
     "create_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "modified_at" TIMESTAMP(3),
-    "delete_at" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "ProductInventory_pkey" PRIMARY KEY ("id")
 );
@@ -134,14 +130,11 @@ CREATE TABLE "Discount" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
-    "discount_percent" DECIMAL(65,30) NOT NULL,
-    "active" BOOLEAN NOT NULL DEFAULT false,
+    "discount_percent" INTEGER NOT NULL,
     "createByAdminId" INTEGER NOT NULL,
     "modifiedByAdminId" INTEGER,
-    "deleteByAdminId" INTEGER,
     "create_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "modified_at" TIMESTAMP(3),
-    "delete_at" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Discount_pkey" PRIMARY KEY ("id")
 );
@@ -196,7 +189,13 @@ CREATE UNIQUE INDEX "RefreshToken_id_key" ON "RefreshToken"("id");
 CREATE UNIQUE INDEX "Product_name_key" ON "Product"("name");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Product_inventoryId_key" ON "Product"("inventoryId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "ProductCategory_name_key" ON "ProductCategory"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Discount_discount_percent_key" ON "Discount"("discount_percent");
 
 -- AddForeignKey
 ALTER TABLE "Customer" ADD CONSTRAINT "Customer_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -214,10 +213,10 @@ ALTER TABLE "Address" ADD CONSTRAINT "Address_customerId_fkey" FOREIGN KEY ("cus
 ALTER TABLE "Product" ADD CONSTRAINT "Product_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "ProductCategory"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Product" ADD CONSTRAINT "Product_inventory_id_fkey" FOREIGN KEY ("inventory_id") REFERENCES "ProductInventory"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Product" ADD CONSTRAINT "Product_inventoryId_fkey" FOREIGN KEY ("inventoryId") REFERENCES "ProductInventory"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Product" ADD CONSTRAINT "Product_discount_id_fkey" FOREIGN KEY ("discount_id") REFERENCES "Discount"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Product" ADD CONSTRAINT "Product_discount_id_fkey" FOREIGN KEY ("discount_id") REFERENCES "Discount"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Product" ADD CONSTRAINT "Product_createByAdminId_fkey" FOREIGN KEY ("createByAdminId") REFERENCES "Admin"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -226,16 +225,10 @@ ALTER TABLE "Product" ADD CONSTRAINT "Product_createByAdminId_fkey" FOREIGN KEY 
 ALTER TABLE "Product" ADD CONSTRAINT "Product_modifiedByAdminId_fkey" FOREIGN KEY ("modifiedByAdminId") REFERENCES "Admin"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Product" ADD CONSTRAINT "Product_deleteByAdminId_fkey" FOREIGN KEY ("deleteByAdminId") REFERENCES "Admin"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "ProductCategory" ADD CONSTRAINT "ProductCategory_createByAdminId_fkey" FOREIGN KEY ("createByAdminId") REFERENCES "Admin"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "ProductCategory" ADD CONSTRAINT "ProductCategory_modifiedByAdminId_fkey" FOREIGN KEY ("modifiedByAdminId") REFERENCES "Admin"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "ProductCategory" ADD CONSTRAINT "ProductCategory_deleteByAdminId_fkey" FOREIGN KEY ("deleteByAdminId") REFERENCES "Admin"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "ProductInventory" ADD CONSTRAINT "ProductInventory_createByAdminId_fkey" FOREIGN KEY ("createByAdminId") REFERENCES "Admin"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -244,16 +237,10 @@ ALTER TABLE "ProductInventory" ADD CONSTRAINT "ProductInventory_createByAdminId_
 ALTER TABLE "ProductInventory" ADD CONSTRAINT "ProductInventory_modifiedByAdminId_fkey" FOREIGN KEY ("modifiedByAdminId") REFERENCES "Admin"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ProductInventory" ADD CONSTRAINT "ProductInventory_deleteByAdminId_fkey" FOREIGN KEY ("deleteByAdminId") REFERENCES "Admin"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "Discount" ADD CONSTRAINT "Discount_createByAdminId_fkey" FOREIGN KEY ("createByAdminId") REFERENCES "Admin"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Discount" ADD CONSTRAINT "Discount_modifiedByAdminId_fkey" FOREIGN KEY ("modifiedByAdminId") REFERENCES "Admin"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Discount" ADD CONSTRAINT "Discount_deleteByAdminId_fkey" FOREIGN KEY ("deleteByAdminId") REFERENCES "Admin"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Cart_item" ADD CONSTRAINT "Cart_item_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "Customer"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -27,8 +27,12 @@ const updateAdminById = async (id, admin: Admin) => {
 const findAdminByUserId = async (userId) => {
   return await prisma.admin.findUnique({
     where: {
-      userId
-    }
-  })
-}
-export { createAdmin, findAdminById, updateAdminById, findAdminByUserId };
+      userId,
+    },
+  });
+};
+
+const findAllAdmins = async () => {
+  return await prisma.admin.findMany();
+};
+export { findAllAdmins, createAdmin, findAdminById, updateAdminById, findAdminByUserId };
