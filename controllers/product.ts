@@ -4,14 +4,8 @@ const router: Router = express.Router();
 import { isAuth } from '../middlewares/auth';
 import { findAdminByUserId } from '../services/admin';
 import { findDiscountById } from '../services/discount';
-import {
-  createProduct,
-  findManyProductBy_CategoryId,
-  findProductById,
-  findProductByName,
-  updateProductById,
-} from '../services/product';
-import { createProductInventory, deletProductInventoryById } from '../services/productInventory';
+import { createProduct, findManyProductBy_CategoryId, findProductById, findProductByName, updateProductById } from '../services/product';
+import { createProductInventory, deletProductInventoryById, updateProductInventoryById } from '../services/productInventory';
 
 // get product by ID:
 router.get('/product/:id', isAuth, async (req: Request, res: Response, next: NextFunction) => {
@@ -30,7 +24,7 @@ router.get('/product/:id', isAuth, async (req: Request, res: Response, next: Nex
   }
 });
 
-// get all product:
+// get all product and all category:
 router.get('/products', isAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
     // check role:
@@ -103,13 +97,18 @@ router.post('/product', isAuth, async (req: Request, res: Response, next: NextFu
     }
 
     // handle discount
-    const discount = await findDiscountById(+discount_id);
-    const discountPercent = discount.discount_percent;
+
     let discountPrice;
-    if (discount_active === Boolean(true)) {
-      discountPrice = (price / 100) * (100 - discountPercent);
-    } else {
+    if (discount_active === Boolean(false)) {
       discountPrice = price;
+    } else {
+      if (!discount_id) {
+        discountPrice = price;
+      } else {
+        const discount = await findDiscountById(+discount_id);
+        const discountPercent = discount.discount_percent;
+        discountPrice = (price / 100) * (100 - discountPercent);
+      }
     }
 
     // adminId:
@@ -120,6 +119,7 @@ router.post('/product', isAuth, async (req: Request, res: Response, next: NextFu
     const productInventoryData = {
       quantity,
       createByAdminId: admin.id,
+      modified_at: null
     } as ProductInventory;
 
     // create Inventory for nproduct:
@@ -158,11 +158,11 @@ router.put('/product/:id', isAuth, async (req: Request, res: Response, next: Nex
       throw new Error('🚫User is Un-Authorized 🚫');
     }
 
-    const id = req.params.id;
-    const { name, description, price, discount_id, discount_active } = req.body;
-    if (!price) {
+    const productId = req.params.id;
+    const { name, description, price, discount_id, discount_active, quantity } = req.body;
+    if (!price || !name) {
       res.status(400);
-      throw new Error('Please input the price of the product');
+      throw new Error('❌ Bad request ...');
     }
 
     // discount
@@ -180,7 +180,17 @@ router.put('/product/:id', isAuth, async (req: Request, res: Response, next: Nex
     const userId = payload.userId;
     const admin = await findAdminByUserId(+userId);
 
-    // valide input:
+    const product = await findProductById(+productId);
+    const inventoryId = product.inventoryId;
+
+    // valide input productInventory:
+    const productInventoryData = {
+      quantity,
+      modifiedByAdminId: admin.id,
+    } as ProductInventory;
+    await updateProductInventoryById(+inventoryId, productInventoryData)
+
+    // valide input product:
     const productData = {
       name,
       description,
@@ -191,8 +201,9 @@ router.put('/product/:id', isAuth, async (req: Request, res: Response, next: Nex
       discount_price: discountPrice,
     } as Product;
 
-    // update
-    await updateProductById(+id, productData);
+    // update product
+    await updateProductById(+productId, productData);
+
     res.status(200).json({ msg: '1 product updated ...' });
   } catch (error) {
     next(error);

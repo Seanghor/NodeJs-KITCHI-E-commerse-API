@@ -135,7 +135,6 @@ async function main() {
     console.table({ customer });
   }
 
-
   function discountPrice(pr: Number, per: Decimal) {
     const price = Number((Number(pr) * (100 - Number(per))) / 100);
     return price;
@@ -144,16 +143,14 @@ async function main() {
   var x = 0;
   for (let i = 1; i < 7; i++) {
     const inventory = await prisma.productInventory.create({
-      data: 
-        {
-          quantity: 30 + i,
-          createByAdminId: 1,
-        },
-
-      
+      data: {
+        quantity: 30 + i,
+        createByAdminId: 1,
+        modified_at: null,
+      },
     });
     console.table({ inventory });
-    
+
     const discount = await prisma.discount.create({
       data: {
         name: `event ${i}`,
@@ -183,20 +180,18 @@ async function main() {
     }
     // create product:
     const product = await prisma.product.createMany({
-      data: 
-        {
-          name: `product ${i}`,
-          description: 'kit transforming your better life',
-          category_id: 1,
-          discount_active: active,
-          price: price1,
-          discount_price: price2,
-          discount_id: discount.id,
-          inventoryId: i, 
-          createByAdminId: 2,
-          modified_at: null,
-        }
-     
+      data: {
+        name: `product ${i}`,
+        description: 'kit transforming your better life',
+        category_id: 1,
+        discount_active: active,
+        price: price1,
+        discount_price: price2,
+        discount_id: discount.id,
+        inventoryId: i,
+        createByAdminId: 2,
+        modified_at: null,
+      },
     });
 
     console.table({ product });

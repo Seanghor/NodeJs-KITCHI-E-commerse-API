@@ -120,7 +120,7 @@ model Product {
   AdminCreate   Admin  @relation(name: "CreateProduct", fields: [createByAdminId], references: [id])
   AdminModified Admin? @relation(name: "ModifiedProduct", fields: [modifiedByAdminId], references: [id])
 
-  discount_id     Int
+  discount_id     Int?
   discount_active Boolean         @default(false)
   price           Decimal
   discount_price  Decimal
