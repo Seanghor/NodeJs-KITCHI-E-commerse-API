@@ -4,7 +4,7 @@ const router: Router = express.Router();
 import { isAuth } from '../middlewares/auth';
 import { findAdminByUserId } from '../services/admin';
 import { findDiscountById } from '../services/discount';
-import { createProduct, findManyProductBy_CategoryId, findProductById, findProductByName, updateProductById } from '../services/product';
+import { createProduct, findProductById, findProductByName, updateProductById } from '../services/product';
 import { createProductInventory, deletProductInventoryById, updateProductInventoryById } from '../services/productInventory';
 
 // get product by ID:
@@ -24,55 +24,7 @@ router.get('/product/:id', isAuth, async (req: Request, res: Response, next: Nex
   }
 });
 
-// get all product and all category:
-router.get('/products', isAuth, async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    // check role:
-    const payload = req.payload;
-    if (!['admin'].includes(payload.Role)) {
-      res.status(401);
-      throw new Error('🚫User is Un-Authorized 🚫');
-    }
-    const categoryProducts = await prisma.productCategory.findMany({
-      select: {
-        id: true,
-        name: true,
-        Product: {
-          select: {
-            id: true,
-            name: true,
-            discount_id: true,
-            discount_active: true,
-            price: true,
-            discount_price: true,
-          },
-        },
-      },
-    });
 
-    res.status(200).json(categoryProducts);
-  } catch (error) {
-    next(error);
-  }
-});
-
-// get products by categoryId:
-router.get('/productCategory/:id', isAuth, async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    // check role:
-    const payload = req.payload;
-    if (!['admin'].includes(payload.Role)) {
-      res.status(401);
-      throw new Error('🚫User is Un-Authorized 🚫');
-    }
-
-    const id = req.params.id;
-    const products = await findManyProductBy_CategoryId(+id);
-    res.status(200).json(products);
-  } catch (error) {
-    next(error);
-  }
-});
 
 // create product
 router.post('/product', isAuth, async (req: Request, res: Response, next: NextFunction) => {
@@ -85,9 +37,9 @@ router.post('/product', isAuth, async (req: Request, res: Response, next: NextFu
     }
     const { name, description, category_id, price, discount_id, discount_active, quantity } = req.body;
 
-    if (!name || !category_id || !price || !price) {
+    if ( !name || !price ) {
       res.status(400);
-      throw new Error('Please fill full information for adding the product ...');
+      throw new Error('Please fill name and price ...');
     }
     // existing name:
     const existingProduct = await findProductByName(name);

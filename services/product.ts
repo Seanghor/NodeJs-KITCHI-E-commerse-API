@@ -41,11 +41,5 @@ const deleteProductById = async (id) => {
 };
 
 
-const findManyProductBy_CategoryId = async (id) => {
-  return await prisma.product.findMany({
-    where: {
-      category_id: id
-    }
-  })
-}
-export { createProduct, findProductByName, updateProductById, findProductById, deleteProductById, findManyProductBy_CategoryId };
+
+export { createProduct, findProductByName, updateProductById, findProductById, deleteProductById, };
