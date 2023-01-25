@@ -3,21 +3,14 @@ import express, { NextFunction, Request, Response, Router } from 'express';
 const router: Router = express.Router();
 import { isAuth } from '../middlewares/auth';
 import { findAdminByUserId } from '../services/admin';
-import {
-  createProductcategory,
-  deleteCategoryById,
-  getAllCategory,
-  updateProductCategoryById,
-} from '../services/productCategory';
+import { createProductcategory, deleteCategoryById, getAllCategory, getOneCategoryIncludeProducts_ByCategoryId, updateProductCategoryById } from '../services/productCategory';
 
-
-
-// get All Category
+// get All Products of Category
 router.get('/productCategories', isAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
     // check role:
     const payload = req.payload;
-    if (!['admin'].includes(payload.Role)) {
+    if (!['admin', 'customer'].includes(payload.Role)) {
       res.status(401);
       throw new Error('🚫User is Un-Authorized 🚫');
     }
@@ -29,12 +22,30 @@ router.get('/productCategories', isAuth, async (req: Request, res: Response, nex
   }
 });
 
+// get OneCategoryIncludeProducts_ByCategoryId
+router.get('/productCategory/:id', isAuth, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    // check role:
+    const payload = req.payload;
+    if (!['admin', 'customer'].includes(payload.Role)) {
+      res.status(401);
+      throw new Error('🚫User is Un-Authorized 🚫');
+    }
+
+    const id = req.params.id
+    const productsCate = await getOneCategoryIncludeProducts_ByCategoryId(+id)
+    res.json(productsCate)
+  } catch (error) {
+    next(error);
+  }
+});
+
 // create Category:
 router.post('/productCategory', isAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
     // check role:
     const payload = req.payload;
-    if (![ 'admin'].includes(payload.Role)) {
+    if (!['admin'].includes(payload.Role)) {
       res.status(401);
       throw new Error('🚫User is Un-Authorized 🚫');
     }
