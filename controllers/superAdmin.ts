@@ -2,10 +2,7 @@ import express, { NextFunction, Request, Response, Router } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { addRefreshTokenToWhitelist} from '../services/auth';
 const router: Router = express.Router();
-import { generateTokens} from '../utils/jwt';
-import { SuperAdmin, User } from '@prisma/client';
-import { createSuperAdmin, findSuperAdminByUsername } from '../services/superadmin';
-import { createUserByEmailAndPassword, findUserByEmail} from '../services/user';
+
 
 
 

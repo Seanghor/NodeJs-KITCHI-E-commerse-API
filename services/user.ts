@@ -10,7 +10,7 @@ const findUserByEmail = async (email: string) => {
   });
 };
 
-const findUserByPhone = async (phone) => {
+const findUserByPhone = async (phone: string) => {
   return await prisma.user.findUnique({
     where: {
       phone,
@@ -18,7 +18,7 @@ const findUserByPhone = async (phone) => {
   });
 };
 
-const createUserByEmailAndPassword = async (user: User) => {
+const createUserDataByEmailAndPassword = async (user: User) => {
   user.password = bcrypt.hashSync(user.password, 12);
   return await prisma.user.create({
     data: user,
@@ -33,7 +33,7 @@ const findUserById = async (id) => {
   });
 };
 
-const deleteUserById = async (id) => {
+const deleteUserDataById = async (id) => {
   return await prisma.user.delete({
     where: {
       id,
@@ -41,7 +41,7 @@ const deleteUserById = async (id) => {
   });
 };
 
-const updateUserById = async (id, user: User) => {
+const updateUserDataById = async (id, user: User) => {
   return await prisma.user.update({
     where: {
       id,
@@ -50,4 +50,4 @@ const updateUserById = async (id, user: User) => {
   });
 };
 
-export { findUserByEmail, findUserByPhone, createUserByEmailAndPassword, findUserById, deleteUserById, updateUserById };
+export { findUserByEmail, findUserByPhone, createUserDataByEmailAndPassword, findUserById, deleteUserDataById, updateUserDataById };
