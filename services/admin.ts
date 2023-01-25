@@ -96,7 +96,7 @@ const updateAdminAndUserById = async (id, admin: AdminCredentialInput) => {
   }
   const existingEmail = await findUserByEmail(admin.email);
   const existingPhone = await findUserByPhone(admin.phone);
-  if (existingEmail || existingPhone) {
+  if ((existingEmail && (existingAdmin.email !== admin.email)) || (existingPhone && (existingAdmin.phone !== admin.phone))) {
     throw new Error('Email or Phone alrealdy exist ...');
   } 
   
