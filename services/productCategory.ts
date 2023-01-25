@@ -77,19 +77,35 @@ const findProductCategoryDataByName = async (name: string) => {
 };
 
 const getOneCategoryIncludeProducts_ByCategoryId = async (id) => {
-  // const productsOfCate =  await prisma.productCategory.findUnique({
-  //   where: {
-  //     id,
-  //   },
-  //   include: {
-  //     Product: true,
-  //   },
-  // });
-  // return productsOfCate
+  const existingCate = await findProductCategoryDataById(+id)
+  if (!existingCate) {
+    throw new Error('Bad request, category not found ...')
+  }
+  const productsOfCate =  await prisma.productCategory.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      Product: {
+        include: {
+          Inventory: true
+        }
+      }
+    },
+  });
+
+  return productsOfCate
 };
 
 const getAllCategory = async () => {
   return await prisma.productCategory.findMany({
+    include: {
+      Product: {
+        include: {
+          Inventory: true
+        }
+      }
+    }
   });
 };
 const findAllProductCategory = async () => {

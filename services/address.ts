@@ -9,6 +9,14 @@ const findAddressById = async (id) => {
   });
 };
 
+const findAddressByCustomerId = async (customerId: number) => {
+  return await prisma.address.findUnique({
+    where: {
+      customerId,
+    },
+  });
+};
+
 const createAddress = async (address: Address) => {
   return await prisma.address.create({
     data: address,
@@ -24,5 +32,4 @@ const updateAddressById = async (id, address: Address) => {
   });
 };
 
-
-export { findAddressById, createAddress, updateAddressById };
+export { findAddressById, findAddressByCustomerId, createAddress, updateAddressById };
