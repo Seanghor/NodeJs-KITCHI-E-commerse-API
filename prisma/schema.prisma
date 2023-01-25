@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["fieldReference"]
 }
 
 datasource db {
@@ -14,22 +15,6 @@ enum RoleEnumType {
   superAdmin
   admin
   customer
-}
-
-enum PaymentEnumType {
-  ABA
-  ACLEDA
-  WING
-}
-
-enum CategoryEnumType {
-  post
-  microwave
-  toaster
-  dishwasher
-  cookware
-  Teapot
-  Knife
 }
 
 model User {
@@ -51,8 +36,19 @@ model Customer {
   phone     String      @unique
   userId    Int         @unique
   User      User        @relation(fields: [userId], references: [id])
-  Address   Address[]
   Cart_item Cart_item[]
+  Address   Address?
+}
+
+model Address {
+  id         Int      @id @default(autoincrement())
+  customerId Int      @unique
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  work       String
+  street     Int
+  zipcode    Int
+  city       String
+  province   String  
 }
 
 model SuperAdmin {
@@ -97,44 +93,32 @@ model RefreshToken {
   updatedAt   DateTime @updatedAt
 }
 
-model Address {
-  id          Int      @id @default(autoincrement())
-  customerId  Int
-  Customer    Customer @relation(fields: [customerId], references: [id])
-  companyName String
-  street      Int
-  zipecode    Int
-  city        String
-  province    String
-  country     String
-}
-
 model Product {
-  id              Int             @id @default(autoincrement())
-  name            String          @unique
+  id              Int               @id @default(autoincrement())
+  name            String            @unique
   description     String?
-  category_id     Int
-  ProductCategory ProductCategory @relation(fields: [category_id], references: [id])
-  Inventory         ProductInventory? @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
-  Discount        Discount?       @relation(fields: [discount_id], references: [id])
-  AdminCreate   Admin  @relation(name: "CreateProduct", fields: [createByAdminId], references: [id])
-  AdminModified Admin? @relation(name: "ModifiedProduct", fields: [modifiedByAdminId], references: [id])
+  category_id     Int?
+  ProductCategory ProductCategory?  @relation(fields: [category_id], references: [id], onDelete: SetNull)
+  Inventory       ProductInventory? @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
+  Discount        Discount?         @relation(fields: [discount_id], references: [id])
+  AdminCreate     Admin             @relation(name: "CreateProduct", fields: [createByAdminId], references: [id])
+  AdminModified   Admin?            @relation(name: "ModifiedProduct", fields: [modifiedByAdminId], references: [id])
 
-  discount_id     Int
-  discount_active Boolean         @default(false)
-  price           Decimal
-  discount_price  Decimal
-  inventoryId       Int             @unique
+  discount_id       Int?
+  discount_active   Boolean     @default(false)
+  price             Decimal
+  discount_price    Decimal
+  inventoryId       Int         @unique
   createByAdminId   Int
   modifiedByAdminId Int?
-  create_at   DateTime?   @default(now())
-  modified_at DateTime?   @updatedAt
-  Cart_item   Cart_item[]
+  create_at         DateTime?   @default(now())
+  modified_at       DateTime?   @updatedAt
+  Cart_item         Cart_item[]
 }
 
 model ProductCategory {
-  id          Int              @id @default(autoincrement())
-  name        CategoryEnumType @unique @default(cookware)
+  id          Int     @id @default(autoincrement())
+  name        String  @unique
   description String?
 
   createByAdminId   Int

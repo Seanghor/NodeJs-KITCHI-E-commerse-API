@@ -3,12 +3,13 @@ import { v4 as uuidv4 } from 'uuid';
 import { addRefreshTokenToWhitelist, deleteRefreshToken, findRefreshTokenById, revokeTokens } from '../services/auth';
 const router: Router = express.Router();
 import { generateTokens, hashToken } from '../utils/jwt';
-import { SuperAdmin, User } from '@prisma/client';
+import { RoleEnumType} from '@prisma/client';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { TokenPayload } from '../interfaces';
-import { createSuperAdmin, findSuperAdminByUsername } from '../services/superadmin';
-import { createUserByEmailAndPassword, findUserByEmail, findUserById } from '../services/user';
+import { CustomerRegister, TokenPayload } from '../interfaces';
+import {  findUserByEmail, findUserById} from '../services/user';
+import { createCustomer } from '../services/customer';
+
 
 /**
  * POST /register
@@ -23,49 +24,37 @@ import { createUserByEmailAndPassword, findUserByEmail, findUserById } from '../
  * @param {string} description the description of the new school
  * @returns {object} 200 - success response
  * @returns {object} 400 - Bad request response
- * @example response - 200 - success response example
+ * @example response - 200 - success response example[]
  *  {
  *   "accessToken":"accessToken",
  *  "refreshToken":"refreshToken"
+ * }
  */
 router.post('/register', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    // Create School
-    const { username, email, password, phone, description } = req.body;
-    if (!username || !password || !email || !phone) {
+    // Create
+    const { username, email, password, phone, work, street, zipcode, city, province } = req.body;
+    if (!username || !email || !password || !phone || !street || !zipcode || !city || !province || !work) {
       res.status(400);
-      throw new Error('You must provide an email, password, and name.');
-    }
-    // Check Exist School name or user
-    const existingSuperAdmin = await findSuperAdminByUsername(username);
-    const existingUser = await findUserByEmail(email);
-    if (existingSuperAdmin || existingUser) {
-      res.status(400);
-      throw new Error('SuperAdmin name or user already in used.');
+      throw new Error('You must provide username, email, password, phone, work, street, zipecode, city, and provice');
     }
 
-    // Validate Input
-    const superAdminData = {
-      username,
-      email,
-      phone,
-      description,
-      createdAt: new Date(),
-      deletedAt: null,
-      updatedAt: new Date(),
-    } as SuperAdmin;
-    // Create School
-    await createSuperAdmin(superAdminData);
-
-    const userData = {
+    const customerData = {
       username,
       email,
       password,
       phone,
-      Role: 'superAdmin',
-    } as User;
+      Role: RoleEnumType.customer,
+      work,
+      street,
+      zipcode,
+      city,
+      province
+    } as CustomerRegister;
+    const customer = await createCustomer(customerData);
 
-    const user = await createUserByEmailAndPassword(userData);
+    const userId = customer.userId
+    const user = await findUserById(+userId)
     const jti = uuidv4();
     const { accessToken, refreshToken } = generateTokens(user, jti);
     await addRefreshTokenToWhitelist({ jti, refreshToken, userId: user.id });

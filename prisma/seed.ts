@@ -49,53 +49,17 @@ async function main() {
   }
 
   // Create 7 cate
-  const productCategory = await prisma.productCategory.createMany({
-    data: [
-      {
-        name: 'Knife',
+  for (let i = 1; i < 8; i++) {
+    const productCategory = await prisma.productCategory.create({
+      data: {
+        name: `Category ${i}`,
         description: 'Hello kon Papa',
         createByAdminId: 1,
         modified_at: null,
       },
-      {
-        name: 'Teapot',
-        description: 'Hello kon Papa',
-        createByAdminId: 1,
-        modified_at: null,
-      },
-      {
-        name: 'cookware',
-        description: 'Hello kon Papa',
-        createByAdminId: 1,
-        modified_at: null,
-      },
-      {
-        name: 'dishwasher',
-        description: 'Hello kon Papa',
-        createByAdminId: 1,
-        modified_at: null,
-      },
-      {
-        name: 'post',
-        description: 'Hello kon Papa',
-        createByAdminId: 1,
-        modified_at: null,
-      },
-      {
-        name: 'microwave',
-        description: 'Hello kon Papa',
-        createByAdminId: 1,
-        modified_at: null,
-      },
-      {
-        name: 'toaster',
-        description: 'Hello kon Papa',
-        createByAdminId: 1,
-        modified_at: null,
-      },
-    ],
-  });
-  console.table({ productCategory });
+    });
+    console.table({ productCategory });
+  }
 
   // create 20 customers(user + customer + address):
   for (let i = 1; i < 20; i++) {
@@ -109,7 +73,7 @@ async function main() {
         Role: 'customer',
       },
     });
-
+    console.table({ user });
     // create customer
     const customer = await prisma.customer.create({
       data: {
@@ -119,22 +83,21 @@ async function main() {
         userId: user.id,
       },
     });
-
+    console.table({ customer });
     // create address
-    await prisma.address.create({
+    const address = await prisma.address.create({
       data: {
         customerId: customer.id,
-        companyName: `company ${i}`,
+        work: `work ${i}`,
         street: 270 + i,
-        zipecode: 300 + i,
+        zipcode: 300 + i,
         city: `city${i}`,
         province: `province${i}`,
-        country: 'Cambodia',
       },
     });
-    console.table({ customer });
-  }
 
+    console.table({ address });
+  }
 
   function discountPrice(pr: Number, per: Decimal) {
     const price = Number((Number(pr) * (100 - Number(per))) / 100);
@@ -144,16 +107,14 @@ async function main() {
   var x = 0;
   for (let i = 1; i < 7; i++) {
     const inventory = await prisma.productInventory.create({
-      data: 
-        {
-          quantity: 30 + i,
-          createByAdminId: 1,
-        },
-
-      
+      data: {
+        quantity: 30 + i,
+        createByAdminId: 1,
+        modified_at: null,
+      },
     });
     console.table({ inventory });
-    
+
     const discount = await prisma.discount.create({
       data: {
         name: `event ${i}`,
@@ -183,20 +144,18 @@ async function main() {
     }
     // create product:
     const product = await prisma.product.createMany({
-      data: 
-        {
-          name: `product ${i}`,
-          description: 'kit transforming your better life',
-          category_id: 1,
-          discount_active: active,
-          price: price1,
-          discount_price: price2,
-          discount_id: discount.id,
-          inventoryId: i, 
-          createByAdminId: 2,
-          modified_at: null,
-        }
-     
+      data: {
+        name: `product ${i}`,
+        description: 'kit transforming your better life',
+        category_id: 1,
+        discount_active: active,
+        price: price1,
+        discount_price: price2,
+        discount_id: discount.id,
+        inventoryId: i,
+        createByAdminId: 2,
+        modified_at: null,
+      },
     });
 
     console.table({ product });

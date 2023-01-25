@@ -1,80 +1,40 @@
-import { Product, ProductInventory } from '@prisma/client';
 import express, { NextFunction, Request, Response, Router } from 'express';
-const router: Router = express.Router();
+import { ProductCreateInput } from '../interfaces';
 import { isAuth } from '../middlewares/auth';
 import { findAdminByUserId } from '../services/admin';
-import { findDiscountById } from '../services/discount';
-import {
-  createProduct,
-  findManyProductBy_CategoryId,
-  findProductById,
-  findProductByName,
-  updateProductById,
-} from '../services/product';
-import { createProductInventory, deletProductInventoryById } from '../services/productInventory';
+import { createProduct, findAllProduct,  findProductDataById, getProductById, updateProductById } from '../services/product';
+import { deletProductInventoryById } from '../services/productInventory';
+const router: Router = express.Router();
 
 // get product by ID:
 router.get('/product/:id', isAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
     // check role:
     const payload = req.payload;
-    if (!['admin'].includes(payload.Role)) {
+    if (!['admin', 'customer'].includes(payload.Role)) {
       res.status(401);
       throw new Error('🚫User is Un-Authorized 🚫');
     }
-    const id = req.params.id;
-    const singleProduct = await findProductById(+id);
-    res.status(200).json({ product: singleProduct });
+    const id = req.params.id
+    const product = await getProductById(+id);
+    res.json({ product });
   } catch (error) {
     next(error);
   }
 });
 
-// get all product:
+// get all products
 router.get('/products', isAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
     // check role:
     const payload = req.payload;
-    if (!['admin'].includes(payload.Role)) {
+    if (!['admin', 'customer'].includes(payload.Role)) {
       res.status(401);
       throw new Error('🚫User is Un-Authorized 🚫');
     }
-    const categoryProducts = await prisma.productCategory.findMany({
-      select: {
-        id: true,
-        name: true,
-        Product: {
-          select: {
-            id: true,
-            name: true,
-            discount_id: true,
-            discount_active: true,
-            price: true,
-            discount_price: true,
-          },
-        },
-      },
-    });
+    const products = await findAllProduct()
+    res.json({products})
 
-    res.status(200).json(categoryProducts);
-  } catch (error) {
-    next(error);
-  }
-});
-
-// get products by categoryId:
-router.get('/productCategory/:id', isAuth, async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    // check role:
-    const payload = req.payload;
-    if (!['admin'].includes(payload.Role)) {
-      res.status(401);
-      throw new Error('🚫User is Un-Authorized 🚫');
-    }
-
-    const id = req.params.id;
-    const products = await findManyProductBy_CategoryId(+id);
-    res.status(200).json(products);
   } catch (error) {
     next(error);
   }
@@ -91,39 +51,17 @@ router.post('/product', isAuth, async (req: Request, res: Response, next: NextFu
     }
     const { name, description, category_id, price, discount_id, discount_active, quantity } = req.body;
 
-    if (!name || !category_id || !price || !price) {
+    if (!name || !price) {
       res.status(400);
-      throw new Error('Please fill full information for adding the product ...');
-    }
-    // existing name:
-    const existingProduct = await findProductByName(name);
-    if (existingProduct) {
-      res.status(400);
-      throw new Error('This product is already exist ...');
+      throw new Error('Please fill name and price ...');
     }
 
+
     // handle discount
-    const discount = await findDiscountById(+discount_id);
-    const discountPercent = discount.discount_percent;
-    let discountPrice;
-    if (discount_active === Boolean(true)) {
-      discountPrice = (price / 100) * (100 - discountPercent);
-    } else {
-      discountPrice = price;
-    }
 
     // adminId:
     const userId = payload.userId;
     const admin = await findAdminByUserId(+userId);
-
-    // validate input productInventory:
-    const productInventoryData = {
-      quantity,
-      createByAdminId: admin.id,
-    } as ProductInventory;
-
-    // create Inventory for nproduct:
-    const inventoryOfProduct = await createProductInventory(productInventoryData);
 
     // validate input product:
     const productData = {
@@ -133,16 +71,13 @@ router.post('/product', isAuth, async (req: Request, res: Response, next: NextFu
       discount_id,
       discount_active,
       price,
-      discount_price: discountPrice,
-      inventoryId: inventoryOfProduct.id,
       createByAdminId: admin.id,
-      modified_at: null,
-    } as Product;
+      quantity,
+    } as ProductCreateInput;
 
     // create product
-    await createProduct(productData);
-
-    res.status(200).json({ msg: '1 product created ...' });
+    const product = await createProduct(productData);
+    res.json(product)
   } catch (error) {
     next(error);
   }
@@ -159,41 +94,30 @@ router.put('/product/:id', isAuth, async (req: Request, res: Response, next: Nex
     }
 
     const id = req.params.id;
-    const { name, description, price, discount_id, discount_active } = req.body;
-    if (!price) {
+    const { name, description,category_id,  price, discount_id, discount_active, quantity } = req.body;
+    if (!price || !name) {
       res.status(400);
-      throw new Error('Please input the price of the product');
-    }
-
-    // discount
-    const discount = await findDiscountById(+discount_id);
-    const discountPercent = discount.discount_percent;
-    let discountPrice;
-
-    if (discount_active === Boolean(true)) {
-      discountPrice = (price / 100) * (100 - discountPercent);
-    } else {
-      discountPrice = price;
+      throw new Error('❌ Bad request ...');
     }
 
     // adminId:
     const userId = payload.userId;
     const admin = await findAdminByUserId(+userId);
 
-    // valide input:
+    // valide input product:
     const productData = {
       name,
       description,
+      category_id,
+      quantity,
+      modifiedByIdminId: admin.id,
       discount_id,
       discount_active,
       price,
-      modifiedByAdminId: admin.id,
-      discount_price: discountPrice,
-    } as Product;
+    } as ProductCreateInput
+    const newProduct = await updateProductById(+id, productData)
+    res.json(newProduct)
 
-    // update
-    await updateProductById(+id, productData);
-    res.status(200).json({ msg: '1 product updated ...' });
   } catch (error) {
     next(error);
   }
@@ -209,7 +133,7 @@ router.delete('/product/:id', isAuth, async (req: Request, res: Response, next: 
       throw new Error('🚫User is Un-Authorized 🚫');
     }
     const productId = req.params.id;
-    const product = await findProductById(+productId);
+    const product = await findProductDataById(+productId);
     const inventoryId = product.inventoryId;
 
     // delete inventory --> product also delete

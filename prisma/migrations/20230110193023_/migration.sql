@@ -1,12 +1,6 @@
 -- CreateEnum
 CREATE TYPE "RoleEnumType" AS ENUM ('superAdmin', 'admin', 'customer');
 
--- CreateEnum
-CREATE TYPE "PaymentEnumType" AS ENUM ('ABA', 'ACLEDA', 'WING');
-
--- CreateEnum
-CREATE TYPE "CategoryEnumType" AS ENUM ('post', 'microwave', 'toaster', 'dishwasher', 'cookware', 'Teapot', 'Knife');
-
 -- CreateTable
 CREATE TABLE "User" (
     "id" SERIAL NOT NULL,
@@ -28,6 +22,19 @@ CREATE TABLE "Customer" (
     "userId" INTEGER NOT NULL,
 
     CONSTRAINT "Customer_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Address" (
+    "id" SERIAL NOT NULL,
+    "customerId" INTEGER NOT NULL,
+    "work" TEXT NOT NULL,
+    "street" INTEGER NOT NULL,
+    "zipcode" INTEGER NOT NULL,
+    "city" TEXT NOT NULL,
+    "province" TEXT NOT NULL,
+
+    CONSTRAINT "Address_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -68,26 +75,12 @@ CREATE TABLE "RefreshToken" (
 );
 
 -- CreateTable
-CREATE TABLE "Address" (
-    "id" SERIAL NOT NULL,
-    "customerId" INTEGER NOT NULL,
-    "companyName" TEXT NOT NULL,
-    "street" INTEGER NOT NULL,
-    "zipecode" INTEGER NOT NULL,
-    "city" TEXT NOT NULL,
-    "province" TEXT NOT NULL,
-    "country" TEXT NOT NULL,
-
-    CONSTRAINT "Address_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "Product" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT,
-    "category_id" INTEGER NOT NULL,
-    "discount_id" INTEGER NOT NULL,
+    "category_id" INTEGER,
+    "discount_id" INTEGER,
     "discount_active" BOOLEAN NOT NULL DEFAULT false,
     "price" DECIMAL(65,30) NOT NULL,
     "discount_price" DECIMAL(65,30) NOT NULL,
@@ -103,7 +96,7 @@ CREATE TABLE "Product" (
 -- CreateTable
 CREATE TABLE "ProductCategory" (
     "id" SERIAL NOT NULL,
-    "name" "CategoryEnumType" NOT NULL DEFAULT 'cookware',
+    "name" TEXT NOT NULL,
     "description" TEXT,
     "createByAdminId" INTEGER NOT NULL,
     "modifiedByAdminId" INTEGER,
@@ -165,6 +158,9 @@ CREATE UNIQUE INDEX "Customer_phone_key" ON "Customer"("phone");
 CREATE UNIQUE INDEX "Customer_userId_key" ON "Customer"("userId");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Address_customerId_key" ON "Address"("customerId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "SuperAdmin_username_key" ON "SuperAdmin"("username");
 
 -- CreateIndex
@@ -201,22 +197,22 @@ CREATE UNIQUE INDEX "Discount_discount_percent_key" ON "Discount"("discount_perc
 ALTER TABLE "Customer" ADD CONSTRAINT "Customer_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "Address" ADD CONSTRAINT "Address_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "Customer"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "Admin" ADD CONSTRAINT "Admin_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "RefreshToken" ADD CONSTRAINT "RefreshToken_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Address" ADD CONSTRAINT "Address_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "Customer"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Product" ADD CONSTRAINT "Product_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "ProductCategory"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Product" ADD CONSTRAINT "Product_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "ProductCategory"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Product" ADD CONSTRAINT "Product_inventoryId_fkey" FOREIGN KEY ("inventoryId") REFERENCES "ProductInventory"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Product" ADD CONSTRAINT "Product_discount_id_fkey" FOREIGN KEY ("discount_id") REFERENCES "Discount"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Product" ADD CONSTRAINT "Product_discount_id_fkey" FOREIGN KEY ("discount_id") REFERENCES "Discount"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Product" ADD CONSTRAINT "Product_createByAdminId_fkey" FOREIGN KEY ("createByAdminId") REFERENCES "Admin"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

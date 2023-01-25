@@ -1,30 +1,29 @@
-import { Admin, User } from '@prisma/client';
+
 import express, { NextFunction, Request, Response, Router } from 'express';
+import { AdminCredentialInput } from '../interfaces';
 const router: Router = express.Router();
 import { isAuth } from '../middlewares/auth';
-import { createAdmin, findAdminById, findAllAdmins, updateAdminById } from '../services/admin';
-import { createUserByEmailAndPassword, deleteUserById, findUserByEmail, findUserByPhone, updateUserById } from '../services/user';
+import { createAdminAndUser, deleteAdminAndUserById, findAdminbyData, findAllAdmins, updateAdminAndUserById} from '../services/admin';
+
 
 /**
  *
- * @summary create an admin by ID (
- * @route {POST} /admin
+ * @summary get an admin (
+ * @route {GET} /admin/:id
  * @auth required
- * @param {number} id the id of the attendance
+ * @role Super Admin
+ * @param {number} id the id of the admin
  * @returns {object} 200 - success response
  * @returns {object} 400 - bad request fail respone
  * @returns {object} 401 - Unauthorized response
  * @example response - 200 - success response subject
  *
  * {
- *	"id": 2,
- *	"date": "2022-12-28T08:20:13.584Z",
- *	"status": null,
- *	"attendanceType": "present",
- *	"teacherId": 2,
- *	"subjectId": 3,
- *	"schoolId": 1,
- *	"studentId": 2
+ *	"id": 1,
+ *	"username": "Seanghor",
+ *	"emain": "seanghor@gmail.com",
+ *  "phone" : "09999999999"
+ *	"userId": "2"
  * }
  */
 router.get('/admin/:id', isAuth, async (req: Request, res: Response, next: NextFunction) => {
@@ -37,8 +36,8 @@ router.get('/admin/:id', isAuth, async (req: Request, res: Response, next: NextF
     }
 
     const id = req.params.id;
-    const admin = await findAdminById(+id);
-    res.status(200).json(admin);
+    const admin = await findAdminbyData(+id);
+    res.status(200).json({ admin });
   } catch (error) {
     next(error);
   }
@@ -49,22 +48,24 @@ router.get('/admin/:id', isAuth, async (req: Request, res: Response, next: NextF
  * @summary create an admin
  * @route {POST} /admin
  * @auth required
- * @param {number} id the id of the attendance
+ * @role superAdmin
+ * @param {string} username the username of the admin
+ * @param {string} email the email of the admin
+ * @param {string} password the password of the admin
+ * @param {string} phone the phone of the admin
  * @returns {object} 200 - success response
  * @returns {object} 400 - bad request fail respone
  * @returns {object} 401 - Unauthorized response
  * @example response - 200 - success response subject
  *
  * {
- *	"id": 2,
- *	"date": "2022-12-28T08:20:13.584Z",
- *	"status": null,
- *	"attendanceType": "present",
- *	"teacherId": 2,
- *	"subjectId": 3,
- *	"schoolId": 1,
- *	"studentId": 2
+ *	"id": 1,
+ *	"username": "Seanghor",
+ *	"emain": "seanghor@gmail.com",
+ *  "phone" : "09999999999"
+ *	"userId": "2"
  * }
+ *
  */
 router.post('/admin', isAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -81,43 +82,40 @@ router.post('/admin', isAuth, async (req: Request, res: Response, next: NextFunc
       throw new Error('You must provide a username, email, password, and phone...');
     }
 
-    // checking phone already exist or not:
-    const existingEmail = await findUserByEmail(email);
-    if (existingEmail) {
-      res.status(400);
-      throw new Error('Email is alrealy in used ...');
-    }
-    const existingPhone = await findUserByPhone(phone);
-    if (existingPhone) {
-      res.status(400);
-      throw new Error('Phone is alrealy in used ...');
-    }
-    const userData = {
+    const adminData = {
       username,
       email,
       password,
       phone,
-      Role: 'admin',
-    } as User;
-    // create user:
-    const user = await createUserByEmailAndPassword(userData);
+    } as AdminCredentialInput;
 
-    // Validate input:
-    const adminData = {
-      username: user.username,
-      email: user.email,
-      phone: user.phone,
-      userId: user.id,
-    } as Admin;
-    // create admin:
-    await createAdmin(adminData);
-    res.status(200).json({ msg: '1 admin created ...' });
+    const admin = await createAdminAndUser(adminData);
+    res.json({ admin });
   } catch (error) {
     next(error);
   }
 });
 
-// delete admin by Id:
+/**
+ *
+ * @summary delete an admin
+ * @route {DELETE} /admin/:id
+ * @auth required
+ * @role Super Admin
+ * @param {number} id the id of the admin
+ * @returns {object} 200 - success response
+ * @returns {object} 400 - bad request fail respone
+ * @returns {object} 401 - Unauthorized response
+ * @example response - 200 - success response subject
+ *
+ * {
+ *	"id": 1,
+ *	"username": "Seanghor",
+ *	"emain": "seanghor@gmail.com",
+ *  "phone" : "09999999999"
+ *	"userId": "2"
+ * }
+ */
 router.delete('/admin/:id', isAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
     // check role:
@@ -127,64 +125,89 @@ router.delete('/admin/:id', isAuth, async (req: Request, res: Response, next: Ne
       throw new Error('🚫User is Un-Authorized 🚫');
     }
 
-    const adminId = req.params.id;
-    const admin = await findAdminById(+adminId);
-
-    const userId = admin.userId;
-    await deleteUserById(+userId);
-    res.status(200).json({ msg: '1 admin deleted successfull ...' });
+    const id = req.params.id;
+    const deleteAdmin = await deleteAdminAndUserById(+id);
+    res.json(deleteAdmin);
   } catch (error) {
     next(error);
   }
 });
 
-// update admin:
+/**
+ *
+ * @summary create an admin
+ * @route {POST} /admin
+ * @auth required
+ * @role superAdmin
+ * @param {string} username the username of the admin
+ * @param {string} email the email of the admin
+ * @param {string} password the password of the admin
+ * @param {string} phone the phone of the admin
+ * @returns {object} 200 - success response
+ * @returns {object} 400 - bad request fail respone
+ * @returns {object} 401 - Unauthorized response
+ * @example response - 200 - success response subject
+ *
+ * {
+ *	"username": "Seanghor",
+ *	"emain": "seanghor@gmail.com",
+ *  "phone" : "09999999999"
+ *
+ * }
+ *
+ */
 router.put('/admin/:id', isAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
-    // check role:
     const payload = req.payload;
+    // check role:
     if (!['superAdmin'].includes(payload.Role)) {
       res.status(401);
       throw new Error('🚫User is Un-Authorized 🚫');
     }
-
-    const adminId = req.params.id;
-    const { username, phone } = req.body;
-    if (!username || !phone) {
+    const { username, email, phone, password } = req.body;
+    if (!username || !email || !phone || !password) {
       res.status(400);
-      throw new Error('username and phone cannot invalid ....');
+      throw new Error("Username or email or phone or password can't invalid ...");
     }
 
-    // check existing phone
-    const existingPhone = await findUserByPhone(phone)
-    if (existingPhone) {
-      res.status(400);
-      throw new Error('This phoneNumber is already in used ...');
-    }
-    
-    const admin = await findAdminById(+adminId);
-    const userId = admin.userId;
-
-    // 1-update user:
-    const updateUserData = {
+    const adminData = {
       username,
-      phone
-    } as User;
-    await updateUserById(+userId, updateUserData);
-
-    // update admin:
-    const updateAdminData = {
-      username,
-      phone
-    } as Admin
-    await updateAdminById(+adminId, updateAdminData)
-    res.status(200).json({ msg: '1 admin updated successfull ...' });
+      email,
+      phone,
+      password,
+    } as AdminCredentialInput;
+    const id = req.params.id
+    const newAdmin = await updateAdminAndUserById(+id, adminData)
+    res.json({newAdmin})
   } catch (error) {
     next(error);
   }
 });
 
-// get all admin:
+/**
+ *
+ * @summary create an admin
+ * @route {POST} /admin
+ * @auth required
+ * @role superAdmin
+ * @param {string} username the username of the admin
+ * @param {string} email the email of the admin
+ * @param {string} password the password of the admin
+ * @param {string} phone the phone of the admin
+ * @returns {object} 200 - success response
+ * @returns {object} 400 - bad request fail respone
+ * @returns {object} 401 - Unauthorized response
+ * @example response - 200 - success response subject
+ *
+ * {
+ *	"id": 1,
+ *	"username": "Seanghor",
+ *	"emain": "seanghor@gmail.com",
+ *  "phone" : "09999999999"
+ *	"userId": "2"
+ * }
+ *
+ */
 router.get('/admins', isAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const payload = req.payload;
@@ -193,12 +216,11 @@ router.get('/admins', isAuth, async (req: Request, res: Response, next: NextFunc
       throw new Error('🚫User is Un-Authorized 🚫');
     }
 
-    const admins = await findAllAdmins()
-    res.status(200).json(admins)
-
+    const admins = await findAllAdmins();
+    res.status(200).json(admins);
   } catch (error) {
-    next(error)
+    next(error);
   }
-})
+});
 
 export default router;
