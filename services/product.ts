@@ -13,6 +13,9 @@ const createProduct = async (product: ProductCreateInput) => {
     throw new Error('Bad request, name alreaady exist ...');
   }
 
+  // check profile:
+  
+
   // check Category:
   const existingCategoryId = await findProductCategoryDataById(product.category_id);
   if (!existingCategoryId) {
@@ -49,6 +52,9 @@ const createProduct = async (product: ProductCreateInput) => {
   // create product:
   const productData = {
     name: product.name,
+    profile: product.profile,
+    images: product.images,
+    rating:product.rating,
     description: product.description,
     category_id: product.category_id,
     discount_id: product.discount_id,
@@ -83,6 +89,9 @@ const getProductById = async (id) => {
     select: {
       id: true,
       name: true,
+      profile: true,
+      images: true,
+      rating:true,
       description: true,
       ProductCategory: {
         select: {
@@ -111,7 +120,10 @@ const getProductById = async (id) => {
   const productData = {
     id: product.id,
     name: product.name,
+    profile: product.profile,
+    images: product.images,
     description: product.description,
+    rating:product.rating,
     category: product.ProductCategory.name,
     discount_percent: product.Discount.discount_percent,
     discount_active: product.discount_active,
@@ -127,6 +139,9 @@ const findAllProduct = async () => {
     select: {
       id: true,
       name: true,
+      rating: true,
+      profile: true,
+      images: true,
       description: true,
       ProductCategory: {
         select: {
@@ -154,7 +169,10 @@ const findAllProduct = async () => {
     allProducts.push({
       id: data.id,
       name: data.name,
+      profile: data.profile,
+      images: data.images,
       description: data.description,
+      rating: data.rating,
       category: data.ProductCategory.name,
       discount_percent: data.Discount.discount_percent,
       discount_active: data.discount_active,
