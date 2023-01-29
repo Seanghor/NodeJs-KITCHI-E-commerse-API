@@ -78,6 +78,9 @@ CREATE TABLE "RefreshToken" (
 CREATE TABLE "Product" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
+    "profile" TEXT,
+    "rating" DECIMAL(65,30) NOT NULL DEFAULT 2.0,
+    "images" TEXT[],
     "description" TEXT,
     "category_id" INTEGER,
     "discount_id" INTEGER,
