@@ -35,6 +35,9 @@ export interface CustomerRegister {
 export interface ProductCreateInput {
   name: string;
   description: string;
+  rating: Decimal;
+  profile: string;
+  images: string[];
   category_id: number;
   discount_id: number;
   discount_active: boolean;
@@ -47,7 +50,10 @@ export interface ProductCreateInput {
 export interface ProductOutput {
   id: number;
   name: string;
+  profile: string;
+  images: string[];
   description: string;
+  rating: Decimal;
   category: string;
   discount_percent: number;
   discount_active: boolean;

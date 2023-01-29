@@ -147,6 +147,9 @@ async function main() {
       data: {
         name: `product ${i}`,
         description: 'kit transforming your better life',
+        rating: 3.5,
+        profile: null,
+        images: ["iamgge1", "image2", "image3"],
         category_id: 1,
         discount_active: active,
         price: price1,

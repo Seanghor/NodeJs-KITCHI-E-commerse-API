@@ -96,6 +96,9 @@ model RefreshToken {
 model Product {
   id              Int               @id @default(autoincrement())
   name            String            @unique
+  profile     String? 
+  rating  Decimal @default(2.0)
+  images  String[]
   description     String?
   category_id     Int?
   ProductCategory ProductCategory?  @relation(fields: [category_id], references: [id], onDelete: SetNull)
