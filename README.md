@@ -24,7 +24,7 @@ yarn install
 ### Run Local Development
 
 ```
-yarn dev
+yarn start
 ```
 
 ### Sync Database (Migrate + Generate + Push)
