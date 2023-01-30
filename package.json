@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.ts",
   "scripts": {
-    "start": "ts-node-dev --respawn index.ts dev",
+    "start": "prisma migrate dev && yarn prisma generate && prisma db push && ts-node-dev --respawn index.ts dev",
     "build": "tsc",
     "db:sync": "prisma migrate dev && yarn prisma generate && prisma db push && yarn prisma studio",
     "db:format": "prisma format",
