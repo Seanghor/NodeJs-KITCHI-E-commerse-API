@@ -4,6 +4,7 @@ import { prisma } from '../prisma/db';
 import { createAddress, findAddressByCustomerId, updateAddressById } from './address';
 import bcrypt from 'bcrypt';
 import { createUserDataByEmailAndPassword, findUserByEmail, findUserById, findUserByPhone, updateUserDataById } from './user';
+import { profile } from 'console';
 
 // ----- Create
 const createCustomer = async (customer: CustomerRegister) => {
@@ -126,6 +127,26 @@ const updateCustomerProfileById = async (id, customer: CustomerRegister, confirm
   return profile;
 };
 
+// get profile
+const getprofile = async (userId: number) => {
+  const user = await findUserById(+userId);
+  const customer = await findCustomerByUserId(+userId);
+  const address = await findAddressByCustomerId(customer.id)
+
+
+  const profileData = {
+    username: user.username,
+    email: user.email,
+    phone: user.phone,
+    work: address.work,
+    street: address.street,
+    zipecode: address.zipcode,
+    city: address.city,
+    province: address.province
+  } 
+
+  return profileData
+};
 const findCustomerById = async (id) => {
   const customer = await prisma.customer.findUnique({
     where: {
@@ -161,4 +182,4 @@ const findCustomerByUserId = async (userId: number) => {
     },
   });
 };
-export { createCustomer, findCustomerByUserId, updateCustomerProfileById, findCustomerById, findCustomerByEmail, findCustomerByPhone };
+export {getprofile, createCustomer, findCustomerByUserId, updateCustomerProfileById, findCustomerById, findCustomerByEmail, findCustomerByPhone };

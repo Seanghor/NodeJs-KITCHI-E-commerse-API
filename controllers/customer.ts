@@ -3,7 +3,7 @@ import express, { NextFunction, Request, Response, Router } from 'express';
 import { CustomerRegister } from '../interfaces';
 import { isAuth } from '../middlewares/auth';
 const router: Router = express.Router();
-import { createCustomer, findCustomerByUserId, updateCustomerProfileById } from '../services/customer';
+import { createCustomer, findCustomerByUserId, getprofile, updateCustomerProfileById } from '../services/customer';
 
 router.post('/register', async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -36,6 +36,15 @@ router.get('/profile', isAuth, async (req: Request, res: Response, next: NextFun
   try {
     const payload = req.payload;
     switch (payload.Role) {
+      case RoleEnumType.customer:
+        const payload = req.payload;
+        const profile = await getprofile(payload.userId);
+        res.json({ profile });
+        break;
+      default:
+        res.status(401);
+        throw new Error('🚫User is Un-Authorized 🚫');
+        break;
     }
   } catch (error) {
     next(error);

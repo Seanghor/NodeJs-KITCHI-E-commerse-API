@@ -105,13 +105,15 @@ async function main() {
   }
   // create discount
   var x = 0;
-  for (let i = 1; i < 7; i++) {
-    const inventory = await prisma.productInventory.create({
-      data: {
-        quantity: 30 + i,
-        createByAdminId: 1,
-        modified_at: null,
-      },
+  for (let i = 1; i < 500; i++) {
+    const inventory = await prisma.productInventory.createMany({
+      data: [
+        {
+          quantity: 30 + i,
+          createByAdminId: 1,
+          modified_at: null,
+        }
+      ],
     });
     console.table({ inventory });
 
@@ -143,14 +145,14 @@ async function main() {
       price2 = discountPrice(price1, dis);
     }
     // create product:
-    const product = await prisma.product.createMany({
+    const product = await prisma.product.create({
       data: {
-        name: `product ${i}`,
+        name: `productA-${i}`,
         description: 'kit transforming your better life',
         rating: 3.5,
-        profile: null,
-        images: ["iamgge1", "image2", "image3"],
-        category_id: 1,
+        profile: 'https://media.sproutsocial.com/uploads/2017/02/10x-featured-social-media-image-size.png',
+        images: ['iamgge1', 'image2', 'image3'],
+        category_id:  Math.floor(Math.random() * (7 - 1 + 1) ) + 1,
         discount_active: active,
         price: price1,
         discount_price: price2,
@@ -160,6 +162,7 @@ async function main() {
         modified_at: null,
       },
     });
+
 
     console.table({ product });
 
