@@ -12,7 +12,7 @@ function generateAccessToken(user: User) {
     Role: user.Role,
   } as TokenPayload;
   return jwt.sign(payload, process.env.JWT_ACCESS_SECRET, {
-    expiresIn: '7d',
+    expiresIn: '12h',
   });
 }
 
@@ -26,7 +26,7 @@ function generateRefreshToken(user: User, jti: string) {
     jti,
   } as TokenPayload;
   return jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
-    expiresIn: '12h',
+    expiresIn: '1d',
   });
 }
 
