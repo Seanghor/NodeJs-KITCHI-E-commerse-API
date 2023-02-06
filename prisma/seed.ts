@@ -105,14 +105,14 @@ async function main() {
   }
   // create discount
   var x = 0;
-  for (let i = 1; i < 500; i++) {
+  for (let i = 1; i < 100; i++) {
     const inventory = await prisma.productInventory.createMany({
       data: [
         {
           quantity: 30 + i,
           createByAdminId: 1,
           modified_at: null,
-        }
+        },
       ],
     });
     console.table({ inventory });
@@ -145,14 +145,31 @@ async function main() {
       price2 = discountPrice(price1, dis);
     }
     // create product:
+    const arrImg = [
+      'https://media.sproutsocial.com/uploads/2017/02/10x-featured-social-media-image-size.png',
+      'https://i.ibb.co/0JKpmgd/blue.png',
+      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3o9ClEwLfHig7HShlxVLxpfAAumPrXcr-qWJ1zKLf3C7xGc8HcI-X472d-snK5pNyye0&usqp=CAU',
+      'https://img2.gratispng.com/20180401/spq/kisspng-converse-drawing-sneakers-chuck-taylor-all-stars-s-closet-5ac1820a366154.5811904015226311782228.jpg',
+      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBexsms98LHPv6OsXFjGU7xcJl1KDDF3zvqzhmMhn6W1-KnkKYCG6bJOjoe-9zL1ppm3o&usqp=CAU',
+      'https://thumbs.dreamstime.com/b/cartoon-sneakers-vector-hand-drawn-illustration-isolated-transparent-background-217088038.jpg',
+      'https://ih1.redbubble.net/image.1811731060.4088/st,small,845x845-pad,1000x1000,f8f8f8.jpg',
+      'https://static.wikia.nocookie.net/gensin-impact/images/8/85/Tartaglia_Icon.png/revision/latest?cb=20210213163935',
+      'https://static.vecteezy.com/system/resources/thumbnails/000/182/406/small/thank_you_1-01.png',
+      'https://i.pinimg.com/originals/62/3a/a8/623aa8f9933ee9a286871bf6e0782538.jpg',
+      'https://i.pinimg.com/originals/73/af/0c/73af0c0389795511117949da29f3079c.jpg',
+      'https://i.pinimg.com/736x/09/31/95/0931955543d67e222855ed47c041f48f.jpg',
+    ];
+    function getRandomElement(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
     const product = await prisma.product.create({
       data: {
         name: `productA-${i}`,
         description: 'kit transforming your better life',
         rating: 3.5,
-        profile: 'https://media.sproutsocial.com/uploads/2017/02/10x-featured-social-media-image-size.png',
+        profile: getRandomElement(arrImg),
         images: ['iamgge1', 'image2', 'image3'],
-        category_id:  Math.floor(Math.random() * (7 - 1 + 1) ) + 1,
+        category_id: Math.floor(Math.random() * (7 - 1 + 1)) + 1,
         discount_active: active,
         price: price1,
         discount_price: price2,
@@ -162,7 +179,6 @@ async function main() {
         modified_at: null,
       },
     });
-
 
     console.table({ product });
 
