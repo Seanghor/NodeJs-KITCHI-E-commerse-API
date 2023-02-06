@@ -6,6 +6,7 @@ import productInventoryController from '../controllers/productInventory';
 import productCategoryController from '../controllers/productCategory';
 import customerController from '../controllers/customer';
 import cartItemController from '../controllers/cartItem';
+import orderController from '../controllers/order';
 import productController from '../controllers/product';
 
 const api = Router()
@@ -16,6 +17,7 @@ const api = Router()
     .use(productCategoryController)
     .use(customerController)
     .use(cartItemController)
+    .use(orderController)
     .use(testController);
 
 export default Router().use('/api', api);

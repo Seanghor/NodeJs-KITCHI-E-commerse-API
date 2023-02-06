@@ -10,7 +10,7 @@ const findAddressById = async (id) => {
 };
 
 const findAddressByCustomerId = async (customerId: number) => {
-  return await prisma.address.findUnique({
+  return await prisma.address.findFirst({
     where: {
       customerId,
     },

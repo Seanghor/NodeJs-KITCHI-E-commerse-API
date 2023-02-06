@@ -25,11 +25,6 @@ export interface CustomerRegister {
   password: string;
   phone: string;
   Role: RoleEnumType;
-  work: string;
-  street: number;
-  zipcode: number;
-  city: string;
-  province: string
 }
 
 export interface ProductCreateInput {
@@ -60,6 +55,30 @@ export interface ProductOutput {
   price: Decimal;
   discount_price: Decimal;
   quantity: number;
+}
+
+export interface CustomerOrder {
+  id: number;
+  customerId: number,
+  productId: number,
+  quantity:number,
+  work: string,
+  street:     number
+  zipcode  : number
+  city     : string
+  province  :string 
+}
+
+export interface GetCustomerOrder {
+  id: number;
+  customerId: number,
+  productId: number,
+  quantity:number,
+  work: string,
+  street:     number
+  zipcode  : number
+  city     : string
+  province  :string 
 }
 declare global {
   namespace Express {

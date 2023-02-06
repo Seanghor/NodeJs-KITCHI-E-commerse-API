@@ -6,8 +6,8 @@ CREATE TABLE "User" (
     "id" SERIAL NOT NULL,
     "username" TEXT NOT NULL,
     "email" TEXT NOT NULL,
-    "password" TEXT NOT NULL,
     "phone" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
     "Role" "RoleEnumType" NOT NULL DEFAULT 'customer',
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
@@ -18,23 +18,10 @@ CREATE TABLE "Customer" (
     "id" SERIAL NOT NULL,
     "username" TEXT NOT NULL,
     "email" TEXT NOT NULL,
-    "phone" TEXT NOT NULL,
+    "phone" TEXT,
     "userId" INTEGER NOT NULL,
 
     CONSTRAINT "Customer_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "Address" (
-    "id" SERIAL NOT NULL,
-    "customerId" INTEGER NOT NULL,
-    "work" TEXT NOT NULL,
-    "street" INTEGER NOT NULL,
-    "zipcode" INTEGER NOT NULL,
-    "city" TEXT NOT NULL,
-    "province" TEXT NOT NULL,
-
-    CONSTRAINT "Address_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -138,11 +125,25 @@ CREATE TABLE "Discount" (
 -- CreateTable
 CREATE TABLE "Cart_item" (
     "id" SERIAL NOT NULL,
-    "customerId" INTEGER NOT NULL,
-    "product_id" INTEGER NOT NULL,
-    "quantity" INTEGER NOT NULL,
+    "customerId" INTEGER,
+    "address_id" INTEGER,
+    "productId" INTEGER NOT NULL,
+    "quantity" INTEGER,
 
     CONSTRAINT "Cart_item_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Address" (
+    "id" SERIAL NOT NULL,
+    "customerId" INTEGER NOT NULL,
+    "work" TEXT NOT NULL,
+    "street" INTEGER NOT NULL,
+    "zipcode" INTEGER NOT NULL,
+    "city" TEXT NOT NULL,
+    "province" TEXT NOT NULL,
+
+    CONSTRAINT "Address_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -159,9 +160,6 @@ CREATE UNIQUE INDEX "Customer_phone_key" ON "Customer"("phone");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Customer_userId_key" ON "Customer"("userId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Address_customerId_key" ON "Address"("customerId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "SuperAdmin_username_key" ON "SuperAdmin"("username");
@@ -196,11 +194,11 @@ CREATE UNIQUE INDEX "ProductCategory_name_key" ON "ProductCategory"("name");
 -- CreateIndex
 CREATE UNIQUE INDEX "Discount_discount_percent_key" ON "Discount"("discount_percent");
 
--- AddForeignKey
-ALTER TABLE "Customer" ADD CONSTRAINT "Customer_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+-- CreateIndex
+CREATE UNIQUE INDEX "Cart_item_productId_key" ON "Cart_item"("productId");
 
 -- AddForeignKey
-ALTER TABLE "Address" ADD CONSTRAINT "Address_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "Customer"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Customer" ADD CONSTRAINT "Customer_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Admin" ADD CONSTRAINT "Admin_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -242,7 +240,10 @@ ALTER TABLE "Discount" ADD CONSTRAINT "Discount_createByAdminId_fkey" FOREIGN KE
 ALTER TABLE "Discount" ADD CONSTRAINT "Discount_modifiedByAdminId_fkey" FOREIGN KEY ("modifiedByAdminId") REFERENCES "Admin"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Cart_item" ADD CONSTRAINT "Cart_item_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "Customer"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Cart_item" ADD CONSTRAINT "Cart_item_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "Customer"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Cart_item" ADD CONSTRAINT "Cart_item_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Cart_item" ADD CONSTRAINT "Cart_item_address_id_fkey" FOREIGN KEY ("address_id") REFERENCES "Address"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Cart_item" ADD CONSTRAINT "Cart_item_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
