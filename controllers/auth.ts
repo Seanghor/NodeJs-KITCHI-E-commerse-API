@@ -33,8 +33,8 @@ import { createCustomer } from '../services/customer';
 router.post('/register', async (req: Request, res: Response, next: NextFunction) => {
   try {
     // Create
-    const { username, email, password, phone, work, street, zipcode, city, province } = req.body;
-    if (!username || !email || !password || !phone || !street || !zipcode || !city || !province || !work) {
+    const { username, email, password, phone} = req.body;
+    if (!username || !email || !password || !phone ) {
       res.status(400);
       throw new Error('You must provide username, email, password, phone, work, street, zipecode, city, and provice');
     }
@@ -45,11 +45,6 @@ router.post('/register', async (req: Request, res: Response, next: NextFunction)
       password,
       phone,
       Role: RoleEnumType.customer,
-      work,
-      street,
-      zipcode,
-      city,
-      province
     } as CustomerRegister;
     const customer = await createCustomer(customerData);
 

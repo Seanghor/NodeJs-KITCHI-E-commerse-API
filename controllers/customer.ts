@@ -68,11 +68,6 @@ router.put('/profile', isAuth, async (req: Request, res: Response, next: NextFun
           username,
           email,
           phone,
-          work,
-          street,
-          zipcode,
-          city,
-          province,
         } as CustomerRegister;
 
         const customer = await findCustomerByUserId(+userId);

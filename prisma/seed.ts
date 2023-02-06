@@ -19,8 +19,8 @@ async function main() {
     data: {
       username: superAdmin.username,
       email: superAdmin.email,
+      phone: `096782320`,
       password: await hash('password', 12),
-      phone: superAdmin.phone,
       Role: 'superAdmin',
     },
   });
@@ -32,8 +32,8 @@ async function main() {
       data: {
         username: `admin ${i}`,
         email: `admin${i}@test.com`,
-        password: await hash('password', 12),
         phone: `09678232${i}`,
+        password: await hash('password', 12),
         Role: 'admin',
       },
     });
@@ -41,7 +41,7 @@ async function main() {
       data: {
         username: userAdmin.username,
         email: userAdmin.email,
-        phone: userAdmin.phone,
+        phone:   userAdmin.phone,
         userId: userAdmin.id,
       },
     });
@@ -68,8 +68,8 @@ async function main() {
       data: {
         username: `username ${i}`,
         email: `user${i}@test.com`,
+        phone: `09678231${i}`,
         password: await hash('password', 12),
-        phone: `0923242${i}`,
         Role: 'customer',
       },
     });
@@ -79,24 +79,11 @@ async function main() {
       data: {
         username: user.username,
         email: user.email,
-        phone: user.phone,
+        phone: `09678232${i}`,
         userId: user.id,
       },
     });
     console.table({ customer });
-    // create address
-    const address = await prisma.address.create({
-      data: {
-        customerId: customer.id,
-        work: `work ${i}`,
-        street: 270 + i,
-        zipcode: 300 + i,
-        city: `city${i}`,
-        province: `province${i}`,
-      },
-    });
-
-    console.table({ address });
   }
 
   function discountPrice(pr: Number, per: Decimal) {

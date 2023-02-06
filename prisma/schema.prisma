@@ -21,8 +21,8 @@ model User {
   id           Int            @id @default(autoincrement())
   username     String
   email        String         @unique
+   phone     String     @unique
   password     String
-  phone        String         @unique
   Role         RoleEnumType   @default(customer)
   RefreshToken RefreshToken[]
   Admin        Admin?
@@ -33,23 +33,13 @@ model Customer {
   id        Int         @id @default(autoincrement())
   username  String
   email     String      @unique
-  phone     String      @unique
+  phone     String?     @unique
   userId    Int         @unique
   User      User        @relation(fields: [userId], references: [id])
   Cart_item Cart_item[]
-  Address   Address?
 }
 
-model Address {
-  id         Int      @id @default(autoincrement())
-  customerId Int      @unique
-  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  work       String
-  street     Int
-  zipcode    Int
-  city       String
-  province   String  
-}
+
 
 model SuperAdmin {
   id          Int       @id @default(autoincrement())
@@ -116,7 +106,7 @@ model Product {
   modifiedByAdminId Int?
   create_at         DateTime?   @default(now())
   modified_at       DateTime?   @updatedAt
-  Cart_item         Cart_item[]
+  cart_item Cart_item?
 }
 
 model ProductCategory {
@@ -170,9 +160,24 @@ model Discount {
 
 model Cart_item {
   id         Int      @id @default(autoincrement())
-  customerId Int
-  Customer   Customer @relation(fields: [customerId], references: [id])
-  product_id Int
-  Product    Product  @relation(fields: [product_id], references: [id])
-  quantity   Int
+  customerId Int?
+  Customer   Customer? @relation(fields: [customerId], references: [id])
+
+  address_id Int?
+  address Address? @relation(fields: [address_id], references: [id])
+  productId Int @unique
+  product Product @relation(fields: [productId], references: [id])
+  quantity   Int?
+  
+}
+
+model Address {
+  id         Int      @id @default(autoincrement())
+  customerId Int     
+  work       String
+  street     Int
+  zipcode    Int
+  city       String
+  province   String  
+  Cart_item         Cart_item[]
 }

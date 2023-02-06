@@ -39,16 +39,6 @@ const createCustomer = async (customer: CustomerRegister) => {
     data: customerData,
   });
 
-  // 3 -create address:
-  const addressData = {
-    customerId: newCustomer.id,
-    work: customer.work,
-    street: customer.street,
-    zipcode: customer.zipcode,
-    city: customer.city,
-    province: customer.province,
-  } as Address;
-  await createAddress(addressData);
   return newCustomer;
 };
 
@@ -97,31 +87,11 @@ const updateCustomerProfileById = async (id, customer: CustomerRegister, confirm
     },
     data: customerData,
   });
-
-  // 3 -update Address:
-  const addressData = {
-    work: customer.work,
-    street: customer.street,
-    zipcode: customer.zipcode,
-    city: customer.city,
-    province: customer.province,
-  } as Address;
-
-  const address = await findAddressByCustomerId(+id);
-  const addressId = address.id;
-  const newAddress = await updateAddressById(+addressId, addressData);
-
   const profile = {
     username: newCustomer.username,
     email: newCustomer.email,
     password: newUser.password,
-    phone: newCustomer.phone,
     Role: newUser.Role,
-    work: newAddress.work,
-    street: newAddress.street,
-    zipcode: newAddress.zipcode,
-    city: newAddress.city,
-    province: newAddress.province,
   } as CustomerRegister;
 
   return profile;
