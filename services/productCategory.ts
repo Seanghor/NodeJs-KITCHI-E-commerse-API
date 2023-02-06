@@ -3,15 +3,15 @@ import { prisma } from '../prisma/db';
 
 //  ---------- update
 const updateProductCategoryById = async (id, productCategory: ProductCategory) => {
-  const cate = await findProductCategoryDataById(+id)
+  const cate = await findProductCategoryDataById(+id);
   if (!cate) {
-    throw new Error('Bad request ...')
+    throw new Error('Bad request ...');
   }
 
-  const name = productCategory.name
-  const existingName = await findProductCategoryDataByName(name)
+  const name = productCategory.name;
+  const existingName = await findProductCategoryDataByName(name);
   if (existingName) {
-    throw new Error('Name already exist ...')
+    throw new Error('Name already exist ...');
   }
 
   const newCategory = await prisma.productCategory.update({
@@ -20,9 +20,8 @@ const updateProductCategoryById = async (id, productCategory: ProductCategory) =
     },
     data: productCategory,
   });
-  return newCategory
-}
-
+  return newCategory;
+};
 
 // ------ Delete
 const deleteProductCategoryDataById = async (id) => {
@@ -34,16 +33,13 @@ const deleteProductCategoryDataById = async (id) => {
 };
 
 const deleteCategoryById = async (id) => {
-  const cate = await findProductCategoryDataById(+id)
+  const cate = await findProductCategoryDataById(+id);
   if (!cate) {
-    throw new Error('Bad request ...')
+    throw new Error('Bad request ...');
   }
-  const deleteCate = await deleteProductCategoryDataById(+id)
-  return deleteCate
-}
-
-
-
+  const deleteCate = await deleteProductCategoryDataById(+id);
+  return deleteCate;
+};
 
 // ----- Create
 const createProductcategory = async (productCategory: ProductCategory) => {
@@ -55,9 +51,8 @@ const createProductcategory = async (productCategory: ProductCategory) => {
   const productCate = await prisma.productCategory.create({
     data: productCategory,
   });
-  return productCate
+  return productCate;
 };
-
 
 // ------ find
 const findProductCategoryDataById = async (id) => {
@@ -77,24 +72,24 @@ const findProductCategoryDataByName = async (name: string) => {
 };
 
 const getOneCategoryIncludeProducts_ByCategoryId = async (id) => {
-  const existingCate = await findProductCategoryDataById(+id)
+  const existingCate = await findProductCategoryDataById(+id);
   if (!existingCate) {
-    throw new Error('Bad request, category not found ...')
+    throw new Error('Bad request, category not found ...');
   }
-  const productsOfCate =  await prisma.productCategory.findUnique({
+  const productsOfCate = await prisma.productCategory.findUnique({
     where: {
       id,
     },
     include: {
       Product: {
         include: {
-          Inventory: true
-        }
-      }
+          Inventory: true,
+        },
+      },
     },
   });
 
-  return productsOfCate
+  return productsOfCate;
 };
 
 const getAllCategory = async () => {
@@ -102,10 +97,12 @@ const getAllCategory = async () => {
     include: {
       Product: {
         include: {
-          Inventory: true
-        }
-      }
-    }
+          Discount: true,
+          Inventory: true,
+        },
+
+      },
+    },
   });
 };
 const findAllProductCategory = async () => {
@@ -121,5 +118,5 @@ export {
   updateProductCategoryById,
   deleteProductCategoryDataById,
   deleteCategoryById,
-  createProductcategory
+  createProductcategory,
 };
