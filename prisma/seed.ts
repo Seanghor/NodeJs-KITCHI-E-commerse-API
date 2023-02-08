@@ -49,7 +49,7 @@ async function main() {
   }
 
   // Create 7 cate
-  for (let i = 1; i < 8; i++) {
+  for (let i = 1; i < 6; i++) {
     const productCategory = await prisma.productCategory.create({
       data: {
         name: `Category ${i}`,
@@ -92,7 +92,7 @@ async function main() {
   }
   // create discount
   var x = 0;
-  for (let i = 1; i < 100; i++) {
+  for (let i = 1; i < 60; i++) {
     const inventory = await prisma.productInventory.createMany({
       data: [
         {
@@ -156,7 +156,7 @@ async function main() {
         rating: 3.5,
         profile: getRandomElement(arrImg),
         images: ['iamgge1', 'image2', 'image3'],
-        category_id: Math.floor(Math.random() * (7 - 1 + 1)) + 1,
+        category_id: Math.floor(Math.random() * (5 - 1 + 1)) + 1,
         discount_active: active,
         price: price1,
         discount_price: price2,

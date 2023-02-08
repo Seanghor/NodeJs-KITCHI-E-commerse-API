@@ -1,4 +1,4 @@
-import { Product, ProductInventory } from '@prisma/client';
+import { Product, ProductInventory, ProductCategory } from '@prisma/client';
 import { ProductCreateInput, ProductOutput } from '../interfaces';
 import { prisma } from '../prisma/db';
 import { findDiscountById } from './discount';
@@ -95,6 +95,7 @@ const getProductById = async (id) => {
       description: true,
       ProductCategory: {
         select: {
+          id:true,
           name: true,
         },
       },
@@ -125,6 +126,7 @@ const getProductById = async (id) => {
     description: product.description,
     rating:product.rating,
     category: product.ProductCategory.name,
+    category_id:product.ProductCategory.id,
     discount_percent: product.Discount.discount_percent,
     discount_active: product.discount_active,
     price: product.price,
@@ -145,6 +147,7 @@ const findAllProduct = async () => {
       description: true,
       ProductCategory: {
         select: {
+          id:true,
           name: true,
         },
       },
@@ -174,6 +177,7 @@ const findAllProduct = async () => {
       description: data.description,
       rating: data.rating,
       category: data.ProductCategory.name,
+      category_id:data.ProductCategory.id,
       discount_percent: data.Discount.discount_percent,
       discount_active: data.discount_active,
       price: data.price,
