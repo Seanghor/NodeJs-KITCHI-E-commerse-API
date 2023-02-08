@@ -1,5 +1,5 @@
-import { RoleEnumType } from "@prisma/client";
-import { Decimal } from "@prisma/client/runtime";
+import { RoleEnumType } from '@prisma/client';
+import { Decimal } from '@prisma/client/runtime';
 
 export interface TokenPayload {
   exp: number;
@@ -10,7 +10,6 @@ export interface TokenPayload {
   userId: number;
   jti?: string;
 }
-
 
 export interface AdminCredentialInput {
   username: string;
@@ -50,6 +49,7 @@ export interface ProductOutput {
   description: string;
   rating: Decimal;
   category: string;
+  category_id: number;
   discount_percent: number;
   discount_active: boolean;
   price: Decimal;
@@ -59,26 +59,26 @@ export interface ProductOutput {
 
 export interface CustomerOrder {
   id: number;
-  customerId: number,
-  productId: number,
-  quantity:number,
-  work: string,
-  street:     number
-  zipcode  : number
-  city     : string
-  province  :string 
+  customerId: number;
+  productId: number;
+  quantity: number;
+  work: string;
+  street: number;
+  zipcode: number;
+  city: string;
+  province: string;
 }
 
 export interface GetCustomerOrder {
   id: number;
-  customerId: number,
-  productId: number,
-  quantity:number,
-  work: string,
-  street:     number
-  zipcode  : number
-  city     : string
-  province  :string 
+  customerId: number;
+  productId: number;
+  quantity: number;
+  work: string;
+  street: number;
+  zipcode: number;
+  city: string;
+  province: string;
 }
 declare global {
   namespace Express {

@@ -82,7 +82,15 @@ const getOneCategoryIncludeProducts_ByCategoryId = async (id) => {
     },
     include: {
       Product: {
+
         include: {
+          Discount: {
+            select: {
+              id: true,
+              name: true,
+              discount_percent:true
+            }
+          },
           Inventory: true,
         },
       },
