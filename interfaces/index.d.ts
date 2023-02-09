@@ -62,11 +62,8 @@ export interface CustomerOrder {
   customerId: number;
   productId: number;
   quantity: number;
-  work: string;
-  street: number;
-  zipcode: number;
-  city: string;
-  province: string;
+  total_price: number;
+  deal : boolean
 }
 
 export interface GetCustomerOrder {

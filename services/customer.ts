@@ -105,14 +105,10 @@ const getprofile = async (userId: number) => {
 
 
   const profileData = {
+    customerId: customer.id,
     username: user.username,
     email: user.email,
     phone: user.phone,
-    work: address.work,
-    street: address.street,
-    zipecode: address.zipcode,
-    city: address.city,
-    province: address.province
   } 
 
   return profileData

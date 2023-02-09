@@ -6,14 +6,14 @@ import { findAdminByUserId } from '../services/admin';
 import { createProductcategory, deleteCategoryById, getAllCategory, getOneCategoryIncludeProducts_ByCategoryId, updateProductCategoryById } from '../services/productCategory';
 
 // get All Products of Category
-router.get('/productCategories', isAuth, async (req: Request, res: Response, next: NextFunction) => {
+router.get('/productCategories',  async (req: Request, res: Response, next: NextFunction) => {
   try {
     // check role:
     const payload = req.payload;
-    if (!['admin', 'customer'].includes(payload.Role)) {
-      res.status(401);
-      throw new Error('🚫User is Un-Authorized 🚫');
-    }
+    // if (!['admin', 'customer'].includes(payload.Role)) {
+    //   res.status(401);
+    //   throw new Error('🚫User is Un-Authorized 🚫');
+    // }
 
     const allProductCategory = await getAllCategory();
     res.json({ allProductCategory });
@@ -23,14 +23,14 @@ router.get('/productCategories', isAuth, async (req: Request, res: Response, nex
 });
 
 // get OneCategoryIncludeProducts_ByCategoryId
-router.get('/productCategory/:id', isAuth, async (req: Request, res: Response, next: NextFunction) => {
+router.get('/productCategory/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
     // check role:
     const payload = req.payload;
-    if (!['admin', 'customer'].includes(payload.Role)) {
-      res.status(401);
-      throw new Error('🚫User is Un-Authorized 🚫');
-    }
+    // if (!['admin', 'customer'].includes(payload.Role)) {
+    //   res.status(401);
+    //   throw new Error('🚫User is Un-Authorized 🚫');
+    // }
 
     const id = req.params.id
     const productsCate = await getOneCategoryIncludeProducts_ByCategoryId(+id)

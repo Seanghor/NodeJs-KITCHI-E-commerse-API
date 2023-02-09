@@ -126,9 +126,10 @@ CREATE TABLE "Discount" (
 CREATE TABLE "Cart_item" (
     "id" SERIAL NOT NULL,
     "customerId" INTEGER,
-    "address_id" INTEGER,
     "productId" INTEGER NOT NULL,
-    "quantity" INTEGER,
+    "quantity" INTEGER NOT NULL,
+    "total_price" DECIMAL(65,30) NOT NULL,
+    "deal" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Cart_item_pkey" PRIMARY KEY ("id")
 );
@@ -195,7 +196,7 @@ CREATE UNIQUE INDEX "ProductCategory_name_key" ON "ProductCategory"("name");
 CREATE UNIQUE INDEX "Discount_discount_percent_key" ON "Discount"("discount_percent");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Cart_item_productId_key" ON "Cart_item"("productId");
+CREATE UNIQUE INDEX "Cart_item_customerId_productId_key" ON "Cart_item"("customerId", "productId");
 
 -- AddForeignKey
 ALTER TABLE "Customer" ADD CONSTRAINT "Customer_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -241,9 +242,3 @@ ALTER TABLE "Discount" ADD CONSTRAINT "Discount_modifiedByAdminId_fkey" FOREIGN 
 
 -- AddForeignKey
 ALTER TABLE "Cart_item" ADD CONSTRAINT "Cart_item_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "Customer"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Cart_item" ADD CONSTRAINT "Cart_item_address_id_fkey" FOREIGN KEY ("address_id") REFERENCES "Address"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Cart_item" ADD CONSTRAINT "Cart_item_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

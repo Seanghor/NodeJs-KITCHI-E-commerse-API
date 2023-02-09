@@ -1,46 +1,24 @@
 import { prisma } from '../prisma/db';
 import { Cart_item, Address } from '@prisma/client';
 import { CustomerOrder, GetCustomerOrder } from '../interfaces';
+import { findProductDataById } from './product';
+import { Decimal } from '@prisma/client/runtime';
 
-const customerOrder = async (order: CustomerOrder) => {
-  const arressData = {
+const customerOrder = async (order: Cart_item) => {
+  const product = await findProductDataById(+order.productId);
+  const proPrice = product.discount_price;
+  const totalPrice = order.quantity * Number(proPrice);
+  const orderData = {
     customerId: order.customerId,
-    work: order.work,
-    street: order.street,
-    zipcode: order.zipcode,
-    city: order.city,
-    province: order.province,
-  } as Address;
-  const address = await prisma.address.create({
-    data: arressData,
-  });
-  console.log('=========== 1 ===============');
-
-  const cartItemData = {
-    customerId: order.customerId,
-    address_id: address.id,
-    productId: Number(order.productId),
+    productId: order.productId,
     quantity: order.quantity,
+    total_price: new Decimal(totalPrice),
+    deal: order.deal,
   } as Cart_item;
 
-  const cartItem = await prisma.cart_item.create({
-    data: cartItemData,
+  return await prisma.cart_item.create({
+    data: orderData,
   });
-  console.log('============== 2 ===============');
-
-  const orderInfo = {
-    id: cartItem.id,
-    customerId: cartItem.customerId,
-    productId: cartItem.productId,
-    quantity: cartItem.quantity,
-    work: address.work,
-    street: address.street,
-    zipcode: address.zipcode,
-    city: address.city,
-    province: address.province,
-  } as GetCustomerOrder;
-
-  return orderInfo;
 };
 
 const findAllOrder = async (customerId: number) => {
@@ -51,28 +29,51 @@ const findAllOrder = async (customerId: number) => {
   });
 };
 
-const deleteOrderProduct = async (productId: number) => {
+const deleteOrderProduct = async (id) => {
   return await prisma.cart_item.delete({
     where: {
-      productId,
+      id,
     },
   });
 };
 
-const updateOrderProduct = async (productId: number, cartItem: Cart_item) => {
+const updateOrderProduct = async (id, cartItem: Cart_item) => {
+  const quantity = cartItem.quantity;
+  const product = await findProductDataById(cartItem.productId);
+  const totalPrice = quantity * Number(product.price);
+  const orderData = {
+    quantity: cartItem.quantity,
+    total_price: new Decimal(totalPrice),
+  } as Cart_item;
+
   return await prisma.cart_item.update({
     where: {
-      productId,
+      id,
     },
-    data: cartItem,
+    data: orderData,
   });
 };
 
-const deleteAll = async (customerId: number) => {
-  return await prisma.cart_item.deleteMany({
+const findOrderById = async (id) => {
+  return await prisma.cart_item.findUnique({
     where: {
-      customerId,
+      id,
     },
   });
 };
-export { deleteAll, customerOrder, findAllOrder, deleteOrderProduct, updateOrderProduct };
+
+const findOrderByIdAndCustomerId = async (productId: number, customerId: number) => {
+  return await prisma.cart_item.findUnique({
+    where: {
+      customerId_productId: { productId, customerId },
+    },
+  });
+};
+const deleteAllOrder = async (id) => {
+  return await prisma.cart_item.deleteMany({
+    where: {
+      id,
+    },
+  });
+};
+export { findOrderByIdAndCustomerId, deleteAllOrder, findOrderById, customerOrder, findAllOrder, deleteOrderProduct, updateOrderProduct };

@@ -7,14 +7,14 @@ import { deletProductInventoryById } from '../services/productInventory';
 const router: Router = express.Router();
 
 // get product by ID:
-router.get('/product/:id', isAuth, async (req: Request, res: Response, next: NextFunction) => {
+router.get('/product/:id',  async (req: Request, res: Response, next: NextFunction) => {
   try {
     // check role:
     const payload = req.payload;
-    if (!['admin', 'customer'].includes(payload.Role)) {
-      res.status(401);
-      throw new Error('🚫User is Un-Authorized 🚫');
-    }
+    // if (!['admin', 'customer'].includes(payload.Role)) {
+    //   res.status(401);
+    //   throw new Error('🚫User is Un-Authorized 🚫');
+    // }
     const id = req.params.id
     const product = await getProductById(+id);
     res.json({ product });
@@ -24,14 +24,14 @@ router.get('/product/:id', isAuth, async (req: Request, res: Response, next: Nex
 });
 
 // get all products
-router.get('/products', isAuth, async (req: Request, res: Response, next: NextFunction) => {
+router.get('/products',  async (req: Request, res: Response, next: NextFunction) => {
   try {
     // check role:
     const payload = req.payload;
-    if (!['admin', 'customer'].includes(payload.Role)) {
-      res.status(401);
-      throw new Error('🚫User is Un-Authorized 🚫');
-    }
+    // if (!['admin', 'customer'].includes(payload.Role)) {
+    //   res.status(401);
+    //   throw new Error('🚫User is Un-Authorized 🚫');
+    // }
     const products = await findAllProduct()
     res.json({products})
 
