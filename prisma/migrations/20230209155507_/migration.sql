@@ -127,7 +127,7 @@ CREATE TABLE "Cart_item" (
     "id" SERIAL NOT NULL,
     "customerId" INTEGER,
     "productId" INTEGER NOT NULL,
-    "quantity" INTEGER NOT NULL,
+    "quantity" INTEGER NOT NULL DEFAULT 1,
     "total_price" DECIMAL(65,30) NOT NULL,
     "deal" BOOLEAN NOT NULL DEFAULT false,
 
