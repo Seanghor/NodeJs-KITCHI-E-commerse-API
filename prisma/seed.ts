@@ -101,7 +101,7 @@ async function main() {
   }
 
   // create discount
-  const disArr = [5, 10, 15, 20, 25, 30, 45, 50, 60, 70, 75, 80];
+  const disArr = [5, 10, 15, 20, 25];
   for (let i = 0; i < disArr.length; i++) {
     const discount = await prisma.discount.create({
       data: {
@@ -119,9 +119,12 @@ async function main() {
     2.2, 2.4, 2.6, 2.5, 2.7, 2.8, 2.9, 3.1, 3.2, 3.3, 3.5, 3.6, 3.7, 3.8, 3.9, 4.0, 4.1, 4.2, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 4.7, 4.9, 5.0,
   ];
   const priceArr = [
-    2.3, 2.5, 3.0, 3.2, 3.5, 3.7, 4.0, 4.2, 4.5, 4.7, 12.0, 20.0, 40.0, 8.0, 19.0, 13.0, 2.0, 44.0, 41.0, 50.0, 49.0, 6.0, 12.0, 35.0, 46.0,
-    18.0, 7.0, 34.0, 20.0, 14.0, 28.0, 36.0, 15.0, 43.0, 17.0, 28.0, 16.0, 26.0, 2.0, 9.0, 33.0, 26.0, 2.0, 18.0, 26.0, 25.0, 41.0, 35.0,
-    46.0, 37.0, 32.0, 26.0, 30.0, 45.0, 19.0, 39.0, 35.0, 2.0, 42.0, 47.0, 5.0, 6.0, 46.0, 23.0, 8.0, 12.0, 34.0, 21.0, 8.0, 7.0, 3.0, 44.0,
+    14.0, 28.0, 36.0, 15.0, 43.0, 17.0, 28.0, 16.0, 26.0, 2.0, 9.0, 33.0, 26.0, 18.0, 26.0, 25.0, 41.0, 35.0, 46.0, 37.0, 32.0, 26.0,
+    30.0, 45.0, 19.0, 39.0, 35.0, 2.0, 42.0, 47.0, 5.0, 6.0, 46.0, 23.0, 8.0, 12.0, 34.0, 21.0, 8.0, 7.0, 3.0, 44.0,
+  ];
+
+  const disPricArr = [
+    30, 35, 40, 45, 50, 55, 60, 66, 78, 80, 99
   ];
   // Create 4 product of Cate1 ----------------------------------------
   for (let i = 0; i < 4; i++) {
@@ -148,10 +151,10 @@ async function main() {
         profile: arrImg1[i],
         images: ['iamgge1', 'image2', 'image3'],
         category_id: 1,
-        discount_active: false,
+        discount_active: getRandomElement([true, false]),
         price: getRandomElement(priceArr),
-        discount_price: 135,
-        discount_id: await getRndInteger(1, 12),
+        discount_price: getRandomElement(disPricArr),
+        discount_id: await getRndInteger(1, 5),
         inventoryId: inventory.id,
         createByAdminId: 1,
         modified_at: null,
@@ -186,10 +189,10 @@ async function main() {
         profile: arrImg2[i],
         images: ['iamgge1', 'image2', 'image3'],
         category_id: 2,
-        discount_active: false,
+        discount_active: getRandomElement([true, false]),
         price: getRandomElement(priceArr),
-        discount_price: 135,
-        discount_id: await getRndInteger(1, 12),
+        discount_price: getRandomElement(disPricArr),
+        discount_id: await getRndInteger(1, 5),
         inventoryId: inventory.id,
         createByAdminId: 1,
         modified_at: null,
@@ -224,10 +227,10 @@ async function main() {
         profile: arrImg3[i],
         images: ['iamgge1', 'image2', 'image3'],
         category_id: 3,
-        discount_active: false,
+        discount_active: getRandomElement([true, false]),
         price: getRandomElement(priceArr),
-        discount_price: 135,
-        discount_id: await getRndInteger(1, 12),
+        discount_price: getRandomElement(disPricArr),
+        discount_id: await getRndInteger(1, 5),
         inventoryId: inventory.id,
         createByAdminId: 1,
         modified_at: null,
@@ -262,10 +265,10 @@ async function main() {
         profile: arrImg4[i],
         images: ['iamgge1', 'image2', 'image3'],
         category_id: 4,
-        discount_active: false,
+        discount_active: getRandomElement([true, false]),
         price: getRandomElement(priceArr),
-        discount_price: 135,
-        discount_id: await getRndInteger(1, 12),
+        discount_price: getRandomElement(disPricArr),
+        discount_id: await getRndInteger(1, 5),
         inventoryId: inventory.id,
         createByAdminId: 1,
         modified_at: null,
@@ -298,10 +301,10 @@ async function main() {
         profile: arrImg5[i],
         images: ['iamgge1', 'image2', 'image3'],
         category_id: 5,
-        discount_active: false,
+        discount_active: getRandomElement([true, false]),
         price: getRandomElement(priceArr),
-        discount_price: 135,
-        discount_id: await getRndInteger(1, 12),
+        discount_price: getRandomElement(disPricArr),
+        discount_id: await getRndInteger(1, 5),
         inventoryId: inventory.id,
         createByAdminId: 1,
         modified_at: null,
@@ -334,10 +337,10 @@ async function main() {
         profile: arrImg6[i],
         images: ['iamgge1', 'image2', 'image3'],
         category_id: 6,
-        discount_active: false,
+        discount_active: getRandomElement([true, false]),
         price: getRandomElement(priceArr),
-        discount_price: 135,
-        discount_id: await getRndInteger(1, 12),
+        discount_price: getRandomElement(disPricArr),
+        discount_id: await getRndInteger(1, 5),
         inventoryId: inventory.id,
         createByAdminId: 1,
         modified_at: null,

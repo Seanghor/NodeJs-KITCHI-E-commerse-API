@@ -157,4 +157,60 @@ router.delete('/product/:id', isAuth, async (req: Request, res: Response, next: 
   }
 });
 
+
+
+// -----------------------------------------------------------
+router.post('/manyProduct', isAuth, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    // check role:
+    const payload = req.payload;
+    if (!['admin'].includes(payload.Role)) {
+      res.status(401);
+      throw new Error('🚫User is Un-Authorized 🚫');
+    }
+    const { name, profile, images, rating,description, category_id, price, discount_id, discount_active, quantity,  } = req.body;
+
+    if (!name || !price) {
+      res.status(400);
+      throw new Error('Please fill name and price ...');
+    }
+
+    if (!profile) {
+      res.status(400);
+      throw new Error('You must give a profile of image ...');
+    }
+
+    // display image
+    console.log(images.length);
+    if (images.length < 3) {
+      res.status(400);
+      throw new Error('You must give atleast 3 images to display your product ...');
+    }
+    
+    // adminId:
+    const userId = payload.userId;
+    const admin = await findAdminByUserId(+userId);
+
+    // validate input product:
+    const productData = {
+      name,
+      description,
+      profile,
+      images,
+      rating,
+      category_id,
+      discount_id,
+      discount_active,
+      price,
+      createByAdminId: admin.id,
+      quantity,
+    } as ProductCreateInput;
+
+    // create product
+    const product = await createProduct(productData);
+    res.json(product)
+  } catch (error) {
+    next(error);
+  }
+});
 export default router;

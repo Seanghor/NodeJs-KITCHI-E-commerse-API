@@ -163,6 +163,9 @@ model Cart_item {
   customerId Int?
   Customer   Customer? @relation(fields: [customerId], references: [id])
   productId  Int       
+  productName String?
+  price Decimal
+  image String?
   quantity Int @default(1)
   total_price Decimal
   deal Boolean @default(false)

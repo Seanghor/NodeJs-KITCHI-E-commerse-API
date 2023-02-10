@@ -1,5 +1,5 @@
 import { prisma } from '../prisma/db';
-import { Cart_item, Address } from '@prisma/client';
+import { Cart_item, Address, Product } from '@prisma/client';
 import { CustomerOrder, GetCustomerOrder } from '../interfaces';
 import { findProductDataById } from './product';
 import { Decimal } from '@prisma/client/runtime';
@@ -11,6 +11,9 @@ const customerOrder = async (order: Cart_item) => {
   const orderData = {
     customerId: order.customerId,
     productId: order.productId,
+    productName: product.name,
+    image: product.profile,
+    price: product.discount_price,
     quantity: order.quantity,
     total_price: new Decimal(totalPrice),
     deal: order.deal,
@@ -26,6 +29,7 @@ const findAllOrder = async (customerId: number) => {
     where: {
       customerId,
     },
+
   });
 };
 
