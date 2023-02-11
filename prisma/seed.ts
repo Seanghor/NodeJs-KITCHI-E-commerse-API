@@ -57,7 +57,7 @@ async function main() {
 
   // Create 6 cate
   for (let i = 0; i < 6; i++) {
-    const cateArr = ['Board', 'Garlic -presser', 'Gas', 'Plate', 'Rubishben', 'Spoon'];
+    const cateArr = ['Gas', 'Garlic -presser', 'Board',  'Plate', 'Rubishben', 'Spoon'];
     const productCategory = await prisma.productCategory.create({
       data: {
         name: cateArr[i],
@@ -126,13 +126,17 @@ async function main() {
   const disPricArr = [
     30, 35, 40, 45, 50, 55, 60, 66, 78, 80, 99
   ];
-  // Create 4 product of Cate1 ----------------------------------------
-  for (let i = 0; i < 4; i++) {
-    const arrImg1 = [
-      'https://i.ibb.co/98SKwnL/1.png',
-      'https://i.ibb.co/TK8MVSb/2.png',
-      'https://i.ibb.co/2Ngcc9v/3.png',
-      'https://i.ibb.co/CzQ5cJ4/4.png',
+  
+
+    // Create 6 product of Cate1 ----------------------------------------
+  for (let i = 0; i < 6; i++) {
+    const arrImg3 = [
+      'https://i.ibb.co/9w59YFc/1.png',
+      'https://i.ibb.co/59NJmkQ/2.png',
+      'https://i.ibb.co/3BTdRPZ/3.png',
+      'https://i.ibb.co/LxgCxvY/4.png',
+      'https://i.ibb.co/SRDfhGM/5.png',
+      'https://i.ibb.co/Yj7KLBB/6.png',
     ];
     const inventoryData = {
       quantity: 20,
@@ -145,12 +149,12 @@ async function main() {
     // create product
     const product = await prisma.product.create({
       data: {
-        name: `productA-${i}`,
+        name: `productC-${i}`,
         description: '',
         rating: getRandomElement(ratingArr),
-        profile: arrImg1[i],
+        profile: arrImg3[i],
         images: ['iamgge1', 'image2', 'image3'],
-        category_id: 1,
+        category_id: 3,
         discount_active: getRandomElement([true, false]),
         price: getRandomElement(priceArr),
         discount_price: getRandomElement(disPricArr),
@@ -161,7 +165,6 @@ async function main() {
       },
     });
   }
-
   // Create 6 product of Cate2 ----------------------------------------
   for (let i = 0; i < 6; i++) {
     const arrImg2 = [
@@ -201,14 +204,13 @@ async function main() {
   }
 
   // Create 6 product of Cate3 ----------------------------------------
-  for (let i = 0; i < 6; i++) {
-    const arrImg3 = [
-      'https://i.ibb.co/9w59YFc/1.png',
-      'https://i.ibb.co/59NJmkQ/2.png',
-      'https://i.ibb.co/3BTdRPZ/3.png',
-      'https://i.ibb.co/LxgCxvY/4.png',
-      'https://i.ibb.co/SRDfhGM/5.png',
-      'https://i.ibb.co/Yj7KLBB/6.png',
+  // Create 4 product of Cate1 ----------------------------------------
+  for (let i = 0; i < 4; i++) {
+    const arrImg1 = [
+      'https://i.ibb.co/98SKwnL/1.png',
+      'https://i.ibb.co/TK8MVSb/2.png',
+      'https://i.ibb.co/2Ngcc9v/3.png',
+      'https://i.ibb.co/CzQ5cJ4/4.png',
     ];
     const inventoryData = {
       quantity: 20,
@@ -221,12 +223,12 @@ async function main() {
     // create product
     const product = await prisma.product.create({
       data: {
-        name: `productC-${i}`,
+        name: `productA-${i}`,
         description: '',
         rating: getRandomElement(ratingArr),
-        profile: arrImg3[i],
+        profile: arrImg1[i],
         images: ['iamgge1', 'image2', 'image3'],
-        category_id: 3,
+        category_id: 1,
         discount_active: getRandomElement([true, false]),
         price: getRandomElement(priceArr),
         discount_price: getRandomElement(disPricArr),
@@ -237,6 +239,7 @@ async function main() {
       },
     });
   }
+ 
 
   // Create 5 product of Cate4 ----------------------------------------
   for (let i = 0; i < 5; i++) {
