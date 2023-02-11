@@ -3,7 +3,15 @@ import express, { NextFunction, Request, Response, Router } from 'express';
 import { CustomerOrder, CustomerRegister } from '../interfaces';
 import { isAuth } from '../middlewares/auth';
 import { findCustomerByUserId } from '../services/customer';
-import { customerOrder, deleteAllOrder, deleteOrderProduct, findAllOrder, findOrderById, findOrderByIdAndCustomerId, updateOrderProduct } from '../services/order';
+import {
+  customerOrder,
+  deleteAllOrder,
+  deleteOrderProduct,
+  findAllOrder,
+  findOrderById,
+  findOrderByIdAndCustomerId,
+  updateOrderProduct,
+} from '../services/order';
 const router: Router = express.Router();
 
 router.post('/order', isAuth, async (req: Request, res: Response, next: NextFunction) => {
@@ -85,7 +93,6 @@ router.get('/orders', isAuth, async (req: Request, res: Response, next: NextFunc
   }
 });
 
-
 router.get('/order/:id', isAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
     // check role:
@@ -94,7 +101,7 @@ router.get('/order/:id', isAuth, async (req: Request, res: Response, next: NextF
       res.status(401);
       throw new Error('🚫User is Un-Authorized 🚫');
     }
-    const orderId = req.params.id
+    const orderId = req.params.id;
     const orders = await findOrderById(+orderId);
     res.json(orders);
   } catch (error) {
@@ -110,15 +117,14 @@ router.get('/order', isAuth, async (req: Request, res: Response, next: NextFunct
       res.status(401);
       throw new Error('🚫User is Un-Authorized 🚫');
     }
-    const { productId } = req.body
-    const customer = await findCustomerByUserId(payload.userId)
+    const { productId } = req.body;
+    const customer = await findCustomerByUserId(payload.userId);
     const orders = await findOrderByIdAndCustomerId(productId, customer.id);
     res.json(orders);
   } catch (error) {
     next(error);
   }
-})
-
+});
 
 router.delete('/order/:id', isAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -128,11 +134,27 @@ router.delete('/order/:id', isAuth, async (req: Request, res: Response, next: Ne
       res.status(401);
       throw new Error('🚫User is Un-Authorized 🚫');
     }
-    const id = req.params.id
-    const deleteOrder = await deleteOrderProduct(+id)
+    const id = req.params.id;
+    const deleteOrder = await deleteOrderProduct(+id);
     res.json(deleteOrder);
   } catch (error) {
     next(error);
   }
-})
+});
+
+router.delete('/orders', isAuth, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    // check role:
+    const payload = req.payload;
+    if (!['customer'].includes(payload.Role)) {
+      res.status(401);
+      throw new Error('🚫User is Un-Authorized 🚫');
+    }
+    const customer = await findCustomerByUserId(payload.userId);
+    const allOrder = await deleteAllOrder(customer.id);
+    res.json({ allOrder });
+  } catch (error) {
+    next(error);
+  }
+});
 export default router;

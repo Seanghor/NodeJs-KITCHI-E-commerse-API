@@ -73,10 +73,10 @@ const findOrderByIdAndCustomerId = async (productId: number, customerId: number)
     },
   });
 };
-const deleteAllOrder = async (id) => {
+const deleteAllOrder = async (customerId:number) => {
   return await prisma.cart_item.deleteMany({
     where: {
-      id,
+      customerId,
     },
   });
 };
