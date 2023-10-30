@@ -1,0 +1,37 @@
+version: "3.9"
+name: kitchi-backend
+services:
+  db:
+    image: postgres:14.3-alpine
+    container_name: kitchi-db
+    restart: always
+    environment:
+      POSTGRES_USER: pg-kitchi
+      POSTGRES_PASSWORD: kitchi9999
+      POSTGRES_DB: kitchi_db
+    ports:
+      - "5435:5435"
+    command: -p 5435
+    volumes:
+      - ./backup/backup.sql:/docker-entrypoint-initdb.d/backup.sql
+      - ./script/restore.sh:/docker-entrypoint-initdb.d/restore.sh
+    networks:
+      - kitchi-network
+  app:
+    container_name: kitchi-app-backend
+    stdin_open: true
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    env_file: ./.env
+    ports:
+      - "${PORT}:${PORT}"
+    depends_on:
+      - db
+    command: pnpm start
+    networks:
+      - kitchi-network
+networks:
+  kitchi-network:
+    driver: bridge
