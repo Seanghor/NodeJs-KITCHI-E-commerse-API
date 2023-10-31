@@ -1,5 +1,9 @@
 version: "3.9"
 name: kitchi-backend
+networks:
+  # kitchi-network:
+  movie_booking-network:
+    driver: bridge
 services:
   db:
     image: postgres:14.3-alpine
@@ -15,8 +19,10 @@ services:
     volumes:
       - ./backup/backup.sql:/docker-entrypoint-initdb.d/backup.sql
       - ./script/restore.sh:/docker-entrypoint-initdb.d/restore.sh
+    # networks:
+    #   - kitchi-network
     networks:
-      - kitchi-network
+      - movie_booking-network
   app:
     container_name: kitchi-app-backend
     stdin_open: true
@@ -31,7 +37,5 @@ services:
       - db
     command: yarn start
     networks:
-      - kitchi-network
-networks:
-  kitchi-network:
-    driver: bridge
+      # - kitchi-network
+      - movie_booking-network
