@@ -29,7 +29,7 @@ services:
       - "${PORT}:${PORT}"
     depends_on:
       - db
-    command: pnpm start
+    command: yarn start
     networks:
       - kitchi-network
 networks:
