@@ -10,5 +10,11 @@
     "forceConsistentCasingInFileNames": true
   },
   "include": ["**/*.ts", "**/*.js"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
+  
+  // added this
+  "devServer": {
+    "compress": true,
+    "public": "store-client-nestroia1.c9users.io" // That solved it
+  }
 }

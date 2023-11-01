@@ -53,5 +53,5 @@ app.use((err: Error | HttpException, req: Request, res: Response, next: NextFunc
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.info(`server up on port ${PORT}`);
+  console.info(`🤖 KITCHI server up on port ${PORT}`);
 });
