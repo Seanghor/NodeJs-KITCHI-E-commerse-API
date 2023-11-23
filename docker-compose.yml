@@ -3,7 +3,7 @@ name: kitchi-backend
 services:
   kitchi-db:
     image: postgres:14.3-alpine
-    container_name: kitchi-db_container
+    container_name: kitchi-db
     restart: always
     environment:
       POSTGRES_USER: pg-kitchi
@@ -18,8 +18,8 @@ services:
     networks:
       - kitchi-network
   kitchi-api:
-    image: kitchi-api
-    container_name: kitchi-api_container
+    image: kitchi-api_image
+    container_name: kitchi-api
     stdin_open: true
     build:
       context: .
@@ -29,7 +29,7 @@ services:
     ports:
       - "${PORT}:${PORT}"
     depends_on:
-      - db
+      - kitchi-db
     command: yarn start
     networks:
       - kitchi-network
